@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.19)
+
+set(TARGET_NAME ZeroEngineRuntime)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+file(GLOB_RECURSE HEADER_FILES "*.h")
+file(GLOB_RECURSE SOURCE_FILES "*.cpp" "*.hpp")
+
+add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
+
+target_link_libraries(${TARGET_NAME}
+        PUBLIC spdlog::spdlog_header_only
+)
