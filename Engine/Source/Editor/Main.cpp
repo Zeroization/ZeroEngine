@@ -1,5 +1,4 @@
-#include <iostream>
-#include <Log/Logger.h>
+#include <pch.h>
 
 int main()
 {
