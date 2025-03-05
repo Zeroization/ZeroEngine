@@ -1,3 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
 
 add_subdirectory(Spdlog)
+add_subdirectory(Glfw)
+add_subdirectory(ImGUI)

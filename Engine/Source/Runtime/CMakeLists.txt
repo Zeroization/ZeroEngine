@@ -12,4 +12,6 @@ add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 target_precompile_headers(${TARGET_NAME} PUBLIC pch.h)
 target_link_libraries(${TARGET_NAME}
         PUBLIC spdlog::spdlog_header_only
+        PUBLIC glfw
+        PUBLIC ImGUI
 )
