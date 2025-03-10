@@ -4,4 +4,5 @@ add_subdirectory(Spdlog)
 
 add_subdirectory(Glad)
 add_subdirectory(Glfw)
+add_subdirectory(freetype)
 add_subdirectory(ImGUI)

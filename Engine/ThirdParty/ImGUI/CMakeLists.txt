@@ -7,5 +7,5 @@ add_library(ImGUI STATIC
         ${IMGUI_SOURCES} ${IMGUI_HEADERS}
 )
 target_include_directories(ImGUI PUBLIC ./)
-target_link_libraries(ImGUI PUBLIC glfw)
+target_link_libraries(ImGUI PUBLIC glfw freetype)
 target_compile_features(ImGUI PRIVATE cxx_std_20)
