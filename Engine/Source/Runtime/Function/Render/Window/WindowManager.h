@@ -12,6 +12,7 @@ namespace ZeroEngine
         static std::shared_ptr<WindowManager> GetInstance();
         static void Create();
 
+        virtual void *GetCurrentContext();
         virtual void *GetWindowPtr() = 0;
         virtual void CloseWindow() = 0;
         virtual bool WindowShouldClose() = 0;

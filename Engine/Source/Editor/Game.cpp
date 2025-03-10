@@ -2,6 +2,7 @@
 
 #include "Function/Input/InputManager.h"
 #include "Function/Render/RenderEngine.h"
+#include "GUI/EditorImGUIManager.h"
 
 namespace ZeroEngine
 {
@@ -12,6 +13,9 @@ namespace ZeroEngine
 
         RenderEngine::Create();
         InputManager::Create();
+#ifdef ZERO_EDITOR
+        EditorImGUIManager::Create();
+#endif
 
         LOG_INFO(std::format("[{}] Engine Init =====================================", __FUNCTION__));
         return true;
@@ -29,6 +33,8 @@ namespace ZeroEngine
     void Game::ShutDown()
     {
         LOG_INFO(std::format("[{}] Engine Shutdown...", __FUNCTION__));
+
+        EditorImGUIManager::Destroy();
     }
 
     void Game::LogicTick(float deltaTime)
@@ -39,7 +45,12 @@ namespace ZeroEngine
     void Game::RenderTick()
     {
         RenderEngine::GetInstance()->BeginRender();
+
         RenderEngine::GetInstance()->Render();
+#ifdef ZERO_EDITOR
+        EditorImGUIManager::GetInstance()->Render();
+#endif
+
         RenderEngine::GetInstance()->EndRender();
     }
 }

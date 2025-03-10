@@ -17,4 +17,9 @@ namespace ZeroEngine
         Instance = std::make_shared<GlfwWindowManager>();
 #endif
     }
+
+    void *WindowManager::GetCurrentContext()
+    {
+        return GetWindowPtr();
+    }
 }

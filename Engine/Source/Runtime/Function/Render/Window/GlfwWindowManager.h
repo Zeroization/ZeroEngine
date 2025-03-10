@@ -11,6 +11,7 @@ namespace ZeroEngine
         GlfwWindowManager();
         ~GlfwWindowManager() override;
 
+        void *GetCurrentContext() override;
         void *GetWindowPtr() override;
         void CloseWindow() override;
         bool WindowShouldClose() override;

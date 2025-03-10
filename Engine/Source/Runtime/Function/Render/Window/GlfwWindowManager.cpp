@@ -112,6 +112,11 @@ namespace ZeroEngine
         glfwTerminate();
     }
 
+    void *GlfwWindowManager::GetCurrentContext()
+    {
+        return glfwGetCurrentContext();
+    }
+
     void *GlfwWindowManager::GetWindowPtr()
     {
         return WindowPtr;
