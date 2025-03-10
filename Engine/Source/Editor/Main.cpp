@@ -1,10 +1,13 @@
 #include <pch.h>
+#include "Game.h"
 
 int main()
 {
-    std::cout << "Hello Editor!\n";
+    if (ZeroEngine::Game::Init("TODO"))
+    {
+        ZeroEngine::Game::Tick();
+        ZeroEngine::Game::ShutDown();
+    }
 
-    ZeroEngine::Logger::Init();
-    LOG_DEBUG("Hello Logger!");
     return 0;
 }

@@ -18,4 +18,4 @@ target_link_libraries(${TARGET_NAME}
         PUBLIC ImGUI
 )
 
-target_compile_definitions(${TARGET_NAME} PUBLIC $<$<CONFIG:Debug>:ZERO_ENABLE_DEBUG>)
+target_compile_definitions(${TARGET_NAME} PUBLIC $<$<CONFIG:Debug>:ZERO_DEBUG_ENABLE>)

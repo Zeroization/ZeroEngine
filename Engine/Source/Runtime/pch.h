@@ -1,6 +1,7 @@
 #pragma once
 // pre-compiled header file
 
+#pragma region 平台侦测 Platform Detection
 // OS定义==============================
 // ZERO_OS_WINDOWS: Windows系统
 // ZERO_OS_LINUX:   Linux系统     TODO
@@ -44,12 +45,18 @@
 #if defined(ZERO_OS_LINUX) && defined(ZERO_GRAPHIC_D3D12)
 #error "Pch Error: Linux OS & D3D12 Not Supported!!!!!"
 #endif
+#pragma endregion
 
 // 是否启用编辑器模式, 后续用于游戏打包=====
 #define ZERO_EDITOR
 
 // 标准库=============================
 #include <iostream>
+#include <format>
+#include <string>
+#include <vector>
+#include <functional>
 
 // 自己的库===========================
+#include "Function/Input/InputDefines.h"
 #include "Core/Log/Logger.h"

@@ -13,6 +13,10 @@ namespace ZeroEngine
 
         spdlog::logger Logger("", {ConsoleSink, FileSink});
         CoreLogger = std::make_shared<spdlog::logger>(Logger);
+#ifdef ZERO_DEBUG_ENABLE
         CoreLogger->set_level(spdlog::level::debug);
+#else
+        CoreLogger->set_level(spdlog::level::info);
+#endif
     }
 }
