@@ -78,7 +78,9 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <cstdint>
 
 // 自己的库===========================
 #include "Function/Input/InputDefines.h"
 #include "Core/Assert/Assert.h"
+#include "Core/Hash/Hash.h"
