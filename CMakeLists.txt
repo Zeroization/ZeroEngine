@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+﻿cmake_minimum_required(VERSION 3.19)
 
 # 如果支持，请为 MSVC 编译器启用热重载。
 if (POLICY CMP0141)

@@ -1,12 +1,44 @@
-﻿#include "EditorImGUIManager_OpenGLImpl.h"
+﻿#include "EditorGUIManager.h"
+#ifdef ZERO_GRAPHIC_OPENGL
+#include "EditorGUIManager_OpenGLImpl.h"
+#endif
 #include "Function/Render/Window/WindowManager.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "GLFW/glfw3.h"
+#include "Panels/EditorGUIPanelManager.h"
+#include "Widgets/EditorGUIWidgets.hpp"
+#include "imgui_internal.h"
+
+#define CHECK_GUI_SHORTCUT(name, shortcut, doAction) \
+ZERO_EXPLICIT_STATIC ImGuiKeyChord chordFor##name = shortcut; \
+ZERO_EXPLICIT_STATIC bool isActiveFor##name = ImGui::GetShortcutRoutingData(chordFor##name)->RoutingCurr != ImGuiKeyOwner_NoOwner; \
+if (!isActiveFor##name && ImGui::IsKeyChordPressed(chordFor##name)) \
+{ \
+	doAction; \
+}
 
 namespace ZeroEngine
 {
-	EditorImGUIManager_OpenGLImpl::EditorImGUIManager_OpenGLImpl()
+	std::shared_ptr<EditorGUIManager> EditorGUIManager::Instance = nullptr;
+
+	void EditorGUIManager::Create()
+	{
+#ifdef ZERO_GRAPHIC_OPENGL
+		Instance = std::make_shared<EditorGUIManager_OpenGLImpl>();
+#endif
+
+		EditorGUIPanelManager::Create();
+	}
+
+	void EditorGUIManager::Destroy()
+	{
+		Instance.reset();
+	}
+
+	std::shared_ptr<EditorGUIManager> EditorGUIManager::GetInstance()
+	{
+		return Instance;
+	}
+
+	EditorGUIManager::EditorGUIManager()
 	{
 		if (WindowManager::GetInstance() == nullptr)
 		{
@@ -107,39 +139,28 @@ namespace ZeroEngine
 		style.Colors[ImGuiCol_CheckMark] = ImVec4(0.96f, 0.96f, 0.96f, 1.00f);
 		style.Colors[ImGuiCol_SliderGrab] = ImVec4(1.0f, 1.0f, 1.0f, 0.3f);
 		style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(1.0f, 1.0f, 1.0f, 1.00f);
-		// 初始化渲染后端
-		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(WindowManager::GetInstance()->GetWindowPtr()), true);
-		ImGui_ImplOpenGL3_Init("#version 460"); // TODO: 读配置
 	}
 
-	EditorImGUIManager_OpenGLImpl::~EditorImGUIManager_OpenGLImpl()
+	void EditorGUIManager::CheckGUIShortcuts()
 	{
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+		CHECK_GUI_SHORTCUT(Undo, ImGuiKey_ModCtrl | ImGuiKey_Z, LOG_DEBUG("UNDO TODO"));
+		CHECK_GUI_SHORTCUT(Redo, ImGuiKey_ModCtrl | ImGuiKey_Y, LOG_DEBUG("REDO TODO"));
 	}
 
-	void EditorImGUIManager_OpenGLImpl::BeforeGUIRender()
+	void EditorGUIManager::Render()
 	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		BeforeGUIRender();
+
+		CheckGUIShortcuts();
+		GUIRender();
+
+		AfterGUIRender();
 	}
 
-	void EditorImGUIManager_OpenGLImpl::GUIRender()
+	void EditorGUIManager::GUIRender()
 	{
-		ImGui::Text("中文测试");
-
+		MainDockingWidget();
+		ImGui::ShowDemoWindow();
 		ImGui::Render();
-	}
-
-	void EditorImGUIManager_OpenGLImpl::AfterGUIRender()
-	{
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-		GLFWwindow *backup_current_context = glfwGetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup_current_context);
 	}
 } // ZeroEngine
