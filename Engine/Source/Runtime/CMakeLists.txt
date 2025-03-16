@@ -13,6 +13,7 @@ target_precompile_headers(${TARGET_NAME} PUBLIC pch.h)
 target_include_directories(${TARGET_NAME} PUBLIC .)
 target_link_libraries(${TARGET_NAME}
         PUBLIC spdlog::spdlog_header_only
+        PUBLIC nfd
         PUBLIC glad
         PUBLIC glfw
         PUBLIC ImGUI
