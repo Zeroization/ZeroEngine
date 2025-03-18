@@ -2,6 +2,7 @@
 
 namespace ZeroEngine
 {
+    static bool bIsRedoEnableForMainDockingWidget = false;
     ZERO_EXPLICIT_STATIC void MainDockingWidget()
     {
         // 主菜单栏================================================
@@ -25,7 +26,7 @@ namespace ZeroEngine
                 {
                     LOG_DEBUG("UNDO");
                 }
-                if (ImGui::MenuItem("重做##MainDockingWidget", "CTRL+Y", false, false))
+                if (ImGui::MenuItem("重做##MainDockingWidget", "CTRL+Y", false, bIsRedoEnableForMainDockingWidget))
                 {
                 } // Disabled item
                 ImGui::SeparatorText("编辑##MainDockingWidget");

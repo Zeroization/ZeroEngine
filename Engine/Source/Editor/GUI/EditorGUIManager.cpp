@@ -159,8 +159,9 @@ namespace ZeroEngine
 
 	void EditorGUIManager::GUIRender()
 	{
+		// TODO: 渲染各种控件和面板
 		MainDockingWidget();
-		ImGui::ShowDemoWindow();
+
 		ImGui::Render();
 	}
 } // ZeroEngine
