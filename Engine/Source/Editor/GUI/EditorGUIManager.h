@@ -13,7 +13,8 @@ namespace ZeroEngine
         EditorGUIManager();
         virtual ~EditorGUIManager() = default;
 
-        /// 快捷键相关===================================
+        /// 逻辑相关===================================
+        void Update();
         void CheckGUIShortcuts();
 
 

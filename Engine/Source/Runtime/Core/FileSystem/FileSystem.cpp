@@ -7,7 +7,7 @@
 #include <Windows.h>
 #include <shellapi.h>
 #include <ShlObj.h>
-#elifdef ZERO_OS_LINUX
+# elif defined(ZERO_OS_LINUX)
 #include <errno.h>
 #endif
 
@@ -135,7 +135,8 @@ namespace ZeroEngine
             return FileSysResult::ErrOthers;
         }
         CloseHandle(fileHandle);
-#elifdef ZERO_OS_LINUX
+# elif defined(ZERO_OS_LINUX)
+
         // TODO: 实现Linux平台的FileTryOpen()
         LOG_CRITICAL(std::format("[{}] Linux version not implemented!", __FUNCTION__));
         return FileSysResult::ErrOthers;
@@ -166,7 +167,8 @@ namespace ZeroEngine
 
 #ifdef ZERO_OS_WINDOWS
         std::string cmd = std::format("explorer.exe /select,\"{}\"", absolutePath.string());
-#elifdef ZERO_OS_LINUX
+#elif defined(ZERO_OS_LINUX)
+
         std::string cmd = std::format("xdg-open \"{}\"", dirname(absolutePath.string().data()));
 #endif
 
@@ -187,7 +189,7 @@ namespace ZeroEngine
                      reinterpret_cast<LPCSTR>(absolutePath.c_str()), nullptr,
                      nullptr, SW_SHOWNORMAL);
         return true;
-#elifdef ZERO_OS_LINUX
+# elif defined(ZERO_OS_LINUX)
         return ShowFileInExplorer(path);
 #endif
     }
@@ -203,7 +205,7 @@ namespace ZeroEngine
         ShellExecute(nullptr, reinterpret_cast<LPCSTR>(L"open"),
                      reinterpret_cast<LPCSTR>(absolutePath.c_str()), nullptr,
                      nullptr, SW_SHOWNORMAL);
-#elifdef ZERO_OS_LINUX
+# elif defined(ZERO_OS_LINUX)
         std::string cmd = std::format("xdg-open \"{}\"", absolutePath.string().data());
         system(cmd.c_str());
 #endif
@@ -233,7 +235,7 @@ namespace ZeroEngine
         std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
         if (!stream || !stream.is_open())
         {
-            LOG_ERROR(std::format("[{}] Can't read file: {}", __FUNCTION__, filepath));
+            LOG_ERROR(std::format("[{}] Can't read file: {}", __FUNCTION__, filepath.string()));
             stream.close();
             return false;
         }
@@ -243,7 +245,7 @@ namespace ZeroEngine
         const auto size = end - stream.tellg();
         if (size == 0)
         {
-            LOG_ERROR(std::format("[{}] Read nothing from file: {}", __FUNCTION__, filepath));
+            LOG_ERROR(std::format("[{}] Read nothing from file: {}", __FUNCTION__, filepath.string()));
             stream.close();
             return false;
         }
@@ -408,7 +410,7 @@ namespace ZeroEngine
         {
             std::filesystem::create_directory(PersistentStoragePath);
         }
-#elifdef ZERO_OS_LINUX
+# elif defined(ZERO_OS_LINUX)
         // TODO
 #endif
 

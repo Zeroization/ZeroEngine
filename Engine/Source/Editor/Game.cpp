@@ -6,7 +6,7 @@
 
 namespace ZeroEngine
 {
-    bool Game::Init(const std::string &path)
+    bool Game::Init(const std::string& path)
     {
         Logger::Init();
         LOG_INFO(std::format("[{}] Engine Init =====================================", __FUNCTION__));
@@ -40,6 +40,7 @@ namespace ZeroEngine
     void Game::LogicTick(float deltaTime)
     {
         InputManager::GetInstance()->Update();
+        EditorGUIManager::GetInstance()->Update();
     }
 
     void Game::RenderTick()

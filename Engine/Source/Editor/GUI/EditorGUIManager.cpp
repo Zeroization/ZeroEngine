@@ -141,6 +141,11 @@ namespace ZeroEngine
 		style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(1.0f, 1.0f, 1.0f, 1.00f);
 	}
 
+	void EditorGUIManager::Update()
+	{
+		CheckGUIShortcuts();
+	}
+
 	void EditorGUIManager::CheckGUIShortcuts()
 	{
 		CHECK_GUI_SHORTCUT(Undo, ImGuiKey_ModCtrl | ImGuiKey_Z, LOG_DEBUG("UNDO TODO"));
@@ -151,7 +156,6 @@ namespace ZeroEngine
 	{
 		BeforeGUIRender();
 
-		CheckGUIShortcuts();
 		GUIRender();
 
 		AfterGUIRender();

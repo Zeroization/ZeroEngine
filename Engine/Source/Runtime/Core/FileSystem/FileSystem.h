@@ -64,7 +64,7 @@ namespace ZeroEngine
         /// 获取文件的唯一名字, 例如出现重命名情况, 返回A(1).txt
         static std::filesystem::path GetUniqueFileName(const std::filesystem::path& filepath);
         /// 获取文件的上次编辑时间
-        static static uint64_t GetLastWriteTime(const std::filesystem::path& filepath);
+        static uint64_t GetLastWriteTime(const std::filesystem::path& filepath);
 
         /// 在资源管理器处打开
         static bool ShowFileInExplorer(const std::filesystem::path& path);
