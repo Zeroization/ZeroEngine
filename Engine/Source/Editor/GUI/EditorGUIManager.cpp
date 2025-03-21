@@ -40,11 +40,7 @@ namespace ZeroEngine
 
 	EditorGUIManager::EditorGUIManager()
 	{
-		if (WindowManager::GetInstance() == nullptr)
-		{
-			LOG_CRITICAL(std::format("[{}] GlfwWindowPtr is nullptr, can't init ImGUI!", __FUNCTION__));
-			return;
-		}
+		ZERO_CORE_ASSERT(WindowManager::GetInstance(), "WindowPtr is nullptr, can't init ImGUI!")
 
 		// 初始化ImGUI ====================================
 		IMGUI_CHECKVERSION();

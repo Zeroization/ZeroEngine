@@ -26,7 +26,7 @@ namespace ZeroEngine
         WindowPtr = glfwCreateWindow(1280, 720, windowName.c_str(), nullptr, nullptr);
         if (WindowPtr == nullptr)
         {
-            const char *errDesc;
+            const char* errDesc;
             int errCode = glfwGetError(&errDesc);
             LOG_CRITICAL(
                 std::format("[GLFW] Failed to create GLFW window.\ncode: {}\nDescription: {}", errCode,
@@ -39,14 +39,17 @@ namespace ZeroEngine
         glfwMakeContextCurrent(WindowPtr);
 #endif
 
+        // 启用垂直同步
+        glfwSwapInterval(1);
+
         // 绑定GLFW报错回调
-        glfwSetErrorCallback([](int error, const char *desc) -> void
+        glfwSetErrorCallback([](int error, const char* desc) -> void
         {
             LOG_ERROR(std::format("[GLFW] Error code: {}, description: {}", error, desc));
         });
 
         // 绑定键盘按键回调
-        glfwSetKeyCallback(WindowPtr, [](GLFWwindow *window, int key, int scancode, int action, int mods)
+        glfwSetKeyCallback(WindowPtr, [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
             switch (action)
             {
@@ -82,7 +85,7 @@ namespace ZeroEngine
         }
 
         // 绑定鼠标按键回调
-        glfwSetMouseButtonCallback(WindowPtr, [](GLFWwindow *window, int button, int action, int mods)
+        glfwSetMouseButtonCallback(WindowPtr, [](GLFWwindow* window, int button, int action, int mods)
         {
             switch (action)
             {
@@ -120,6 +123,11 @@ namespace ZeroEngine
     void *GlfwWindowManager::GetWindowPtr()
     {
         return WindowPtr;
+    }
+
+    float GlfwWindowManager::GetCurFrameTime()
+    {
+        return glfwGetTime();
     }
 
     void GlfwWindowManager::CloseWindow()

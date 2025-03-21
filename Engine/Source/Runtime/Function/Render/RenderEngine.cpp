@@ -14,6 +14,11 @@ namespace ZeroEngine
         RHI::Create();
     }
 
+    void RenderEngine::Destroy()
+    {
+        Instance.reset();
+    }
+
     std::shared_ptr<RenderEngine> RenderEngine::GetInstance()
     {
         return Instance;

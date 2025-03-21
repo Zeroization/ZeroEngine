@@ -11,17 +11,19 @@ namespace ZeroEngine
         GlfwWindowManager();
         ~GlfwWindowManager() override;
 
-        void *GetCurrentContext() override;
-        void *GetWindowPtr() override;
         void CloseWindow() override;
         bool WindowShouldClose() override;
 
         void Update() override;
-        std::pair<float, float> GetMousePos() override;
         bool CheckKeyDown(Key key) override;
         bool CheckMouseDown(MouseButton mb) override;
 
+        void *GetCurrentContext() override;
+        void *GetWindowPtr() override;
+        float GetCurFrameTime() override;
+        std::pair<float, float> GetMousePos() override;
+
     private:
-        GLFWwindow *WindowPtr;
+        GLFWwindow* WindowPtr;
     };
 } // ZeroEngine

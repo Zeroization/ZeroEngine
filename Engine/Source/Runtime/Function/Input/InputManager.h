@@ -23,6 +23,7 @@ namespace ZeroEngine
     public:
         static std::shared_ptr<InputManager> GetInstance();
         static void Create();
+        static void Destroy();
 
         InputManager() = default;
         virtual ~InputManager() = default;
@@ -34,6 +35,7 @@ namespace ZeroEngine
         /// 将上一帧为Released状态的key, mb设置为None状态
         void ClearReleased();
 
+        /// 键盘输入相关
         void UpdateKeyState(Key key, KeyState newState);
         bool IsKeyPressed(Key key);
         bool IsKeyHeld(Key key);
@@ -41,6 +43,7 @@ namespace ZeroEngine
         bool IsKeyDown(Key key);
         bool isKeyReleased(Key key);
 
+        /// 鼠标输入相关
         void UpdateMouseButtonState(MouseButton mb, KeyState newState);
         bool IsMouseButtonPressed(MouseButton mb);
         bool isMouseButtonHeld(MouseButton mb);

@@ -21,9 +21,14 @@ namespace ZeroEngine
 #endif
     }
 
+    void InputManager::Destroy()
+    {
+        Instance.reset();
+    }
+
     void InputManager::TransitionPressed()
     {
-        for (const auto &[key, keyData]: sKeyData)
+        for (const auto& [key, keyData]: sKeyData)
         {
             if (keyData.CurState == KeyState::Pressed)
             {
@@ -31,7 +36,7 @@ namespace ZeroEngine
             }
         }
 
-        for (const auto &[mb, mbData]: sMouseData)
+        for (const auto& [mb, mbData]: sMouseData)
         {
             if (mbData.CurState == KeyState::Pressed)
             {
@@ -42,7 +47,7 @@ namespace ZeroEngine
 
     void InputManager::ClearReleased()
     {
-        for (const auto &[key, keyData]: sKeyData)
+        for (const auto& [key, keyData]: sKeyData)
         {
             if (keyData.CurState == KeyState::Released)
             {
@@ -50,7 +55,7 @@ namespace ZeroEngine
             }
         }
 
-        for (const auto &[mb, mbData]: sMouseData)
+        for (const auto& [mb, mbData]: sMouseData)
         {
             if (mbData.CurState == KeyState::Released)
             {
@@ -61,7 +66,7 @@ namespace ZeroEngine
 
     void InputManager::UpdateKeyState(Key key, KeyState newState)
     {
-        auto &[Key, CurState, OldState] = sKeyData[key];
+        auto& [Key, CurState, OldState] = sKeyData[key];
         Key = key;
         OldState = CurState;
         CurState = newState;
@@ -91,7 +96,7 @@ namespace ZeroEngine
 
     void InputManager::UpdateMouseButtonState(MouseButton mb, KeyState newState)
     {
-        auto &[MouseButton, CurState, OldState] = sMouseData[mb];
+        auto& [MouseButton, CurState, OldState] = sMouseData[mb];
         MouseButton = mb;
         OldState = CurState;
         CurState = newState;
