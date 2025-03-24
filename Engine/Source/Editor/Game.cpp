@@ -62,7 +62,7 @@ namespace ZeroEngine
 
     void Game::LogicTick(float deltaTime)
     {
-        LOG_DEBUG(std::format("[{}] Engine Delta time: {}", __FUNCTION__, gEngineDeltaTime));
+        // LOG_DEBUG(std::format("[{}] Engine Delta time: {}", __FUNCTION__, gEngineDeltaTime));
 
         InputManager::GetInstance()->Update();
         EditorGUIManager::GetInstance()->Update();
