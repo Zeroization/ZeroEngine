@@ -1,5 +1,6 @@
 #include "Game.h"
 
+#include "Core/Reflection/ReflectionManager.h"
 #include "Function/Input/InputManager.h"
 #include "Function/Render/RenderEngine.h"
 #include "Function/Render/Window/WindowManager.h"
@@ -16,6 +17,7 @@ namespace ZeroEngine
         Logger::Init();
         LOG_INFO(std::format("[{}] Engine Init =====================================", __FUNCTION__));
 
+        Reflection::ReflectionManager::Create();
         RenderEngine::Create();
         InputManager::Create();
 #ifdef ZERO_EDITOR
@@ -58,6 +60,7 @@ namespace ZeroEngine
         EditorGUIManager::Destroy();
         InputManager::Destroy();
         RenderEngine::Destroy();
+        Reflection::ReflectionManager::Destroy();
     }
 
     void Game::LogicTick(float deltaTime)

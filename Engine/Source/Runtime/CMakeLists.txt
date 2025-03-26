@@ -13,6 +13,7 @@ target_precompile_headers(${TARGET_NAME} PUBLIC pch.h)
 target_include_directories(${TARGET_NAME} PUBLIC .)
 target_link_libraries(${TARGET_NAME}
         PUBLIC spdlog::spdlog_header_only
+        PUBLIC EnTT::EnTT
         PUBLIC nfd
         PUBLIC glad
         PUBLIC glfw
@@ -22,4 +23,6 @@ target_link_libraries(${TARGET_NAME}
 target_compile_definitions(${TARGET_NAME}
         PUBLIC $<$<CONFIG:Debug>:ZERO_DEBUG_ENABLE>
         PUBLIC ZERO_ASSET_DIR="${ENGINE_ASSET_DIR}"
+        # EnTT
+        PUBLIC ENTT_USE_ATOMIC
 )

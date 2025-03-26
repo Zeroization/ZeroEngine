@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "Hash.h"
-#include <string>
 
 namespace ZeroEngine
 {
@@ -26,6 +25,7 @@ namespace ZeroEngine
         explicit constexpr operator uint32_t() const noexcept { return hash; }
 
         constexpr std::string_view GetDebugName() const { return debugName; }
+        constexpr uint32_t GetHashVal() const { return hash; }
 
     private:
         friend struct std::hash<Identifier>;
