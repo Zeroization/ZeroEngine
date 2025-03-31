@@ -14,6 +14,7 @@ target_include_directories(${TARGET_NAME} PUBLIC .)
 target_link_libraries(${TARGET_NAME}
         PUBLIC spdlog::spdlog_header_only
         PUBLIC EnTT::EnTT
+        PUBLIC nlohmann_json::nlohmann_json
         PUBLIC nfd
         PUBLIC glad
         PUBLIC glfw
