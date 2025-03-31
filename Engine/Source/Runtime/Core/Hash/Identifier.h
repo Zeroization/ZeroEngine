@@ -7,14 +7,14 @@ namespace ZeroEngine
     class Identifier
     {
     public:
-        constexpr Identifier() = delete;
+        explicit Identifier() = default;
 
-        constexpr explicit Identifier(std::string_view name) noexcept
+        explicit Identifier(const std::string_view name)
             : hash(StrHash::FNVHash(name)), debugName(name)
         {
         }
 
-        constexpr explicit Identifier(uint32_t hash) noexcept
+        explicit Identifier(uint32_t hash)
             : hash(hash)
         {
         }
@@ -30,7 +30,7 @@ namespace ZeroEngine
     private:
         friend struct std::hash<Identifier>;
         uint32_t hash = 0;
-        std::string_view debugName;
+        std::string_view debugName{};
     };
 }
 

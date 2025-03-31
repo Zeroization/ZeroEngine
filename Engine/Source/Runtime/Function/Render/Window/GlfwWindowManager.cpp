@@ -154,7 +154,7 @@ namespace ZeroEngine
         double x, y;
         glfwGetCursorPos(WindowPtr, &x, &y);
 
-        return {x, y};
+        return {static_cast<float>(x), static_cast<float>(y)};
     }
 
     bool GlfwWindowManager::CheckKeyDown(Key key)
