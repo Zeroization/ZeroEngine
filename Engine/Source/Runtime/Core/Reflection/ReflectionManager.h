@@ -89,12 +89,52 @@ namespace ZeroEngine::Reflection
         template<typename T>
         using NoDeduce_t = typename NoDeduce<T>::type;
 
+        /// 获取一个反射变量
+        /// @tparam ClassType 类型名
+        /// @tparam RetType 变量值类型
+        /// @param varName 变量名
+        /// @param instance 要获取变量的实例
+        /// @return 指向该对象的指针, 没有就是nullptr
+        template<typename ClassType, typename RetType>
+        NoDeduce_t<RetType>* GetVariable(std::string_view varName, NoDeduce_t<ClassType>* instance)
+        {
+            if (entt::meta_data data = entt::resolve<ClassType>().data(GetTypeNameHash(varName));
+                data)
+            {
+                return data.get(*instance).try_cast<NoDeduce_t<RetType>>();
+            }
+
+            LOG_ERROR("[{}] No such variable {} !", __FUNCTION__, varName);
+            return nullptr;
+        }
+
+        /// 设置一个反射变量
+        /// @tparam ClassType 类型名
+        /// @tparam VarType 变量类型
+        /// @param varName 变量名
+        /// @param instance 要设置变量的实例
+        /// @param value 变量值
+        /// @return 操作是否成功
+        template<typename ClassType, typename VarType>
+        bool SetVariable(std::string_view varName, NoDeduce_t<ClassType>* instance, const NoDeduce_t<VarType>& value)
+        {
+            if (entt::meta_data data = entt::resolve<ClassType>().data(GetTypeNameHash(varName));
+                data)
+            {
+                return data.set(*instance, value);
+            }
+
+            LOG_ERROR("[{}] No such variable {} !", __FUNCTION__, varName);
+            return false;
+        }
+
         /// 调用一个反射函数
         /// @tparam ClassType 类型名
+        /// @tparam RetType 函数返回值类型
         /// @param funcName 要调用的函数名
         /// @param instance 调用的对象示例
         /// @param args 参数列表
-        /// @return 指向该对象的指针, 没有就是nullptr
+        /// @return 指向函数返回值的指针, 没有就是nullptr
         template<typename ClassType, typename RetType, typename... Args>
         NoDeduce_t<RetType>* InvokeFunction(std::string_view funcName, NoDeduce_t<ClassType>* instance,
                                             NoDeduce_t<Args>... args)
