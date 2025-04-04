@@ -23,17 +23,19 @@
 #define ZERO_BODY(ClassTypeName) \
     friend class ::ZeroEngine::Reflection::ReflectionManager; \
     friend class ::ZeroEngine::Reflection::Type##ClassTypeName##Operator; \
-    // TODO: friend class ::ZeroEngine::SerializationManager;
+    friend class ::nlohmann::adl_serializer<ClassTypeName>;
 
 // 仅供代码生成时使用的內部宏
 #define ZERO_REFL_NAME_HASH(NameStr) \
     ::ZeroEngine::Reflection::ReflectionManager::GetInstance()->GetTypeNameHash(#NameStr)
 #define ZERO_REFL_REGISTER_CLASS(ClassTypeName) \
     entt::meta_factory<ClassTypeName>{} \
-        .type(ZERO_REFL_NAME_HASH(ClassTypeName));
+        .type(ZERO_REFL_NAME_HASH(ClassTypeName)) \
+        .custom<::ZeroEngine::Reflection::CustomData>(#ClassTypeName);
 #define ZERO_REFL_REGISTER_BASE_CLASS(ClassTypeName, BaseClassTypeName) \
     entt::meta_factory<ClassTypeName>{} \
         .base<BaseClassTypeName>();
+// .custom<::ZeroEngine::Reflection::ClassCustomData>(#BaseClassTypeName);
 #define ZERO_REFL_REGISTER_CTOR_BY_ARGS(ClassTypeName, ...) \
     entt::meta_factory<ClassTypeName>{} \
         .ctor<__VA_ARGS__>();
@@ -45,19 +47,30 @@
         .dtor<FuncAddr>();
 #define ZERO_REFL_REGISTER_VARIABLE(ClassTypeName, VariableName, VariableAddr) \
     entt::meta_factory<ClassTypeName>{} \
-        .data<VariableAddr>(ZERO_REFL_NAME_HASH(VariableName));
+        .data<VariableAddr>(ZERO_REFL_NAME_HASH(VariableName)) \
+        .custom<::ZeroEngine::Reflection::CustomData>(#VariableName);
 #define ZERO_REFL_REGISTER_VARIABLE_BY_GETTER_AND_SETTER(ClassTypeName, VariableName, GetterVarOrFuncAddr, SetterVarOrFuncAddr) \
     entt::meta_factory<ClassTypeName>{} \
-        .data<GetterVarOrFuncAddr, SetterVarOrFuncAddr>(ZERO_REFL_NAME_HASH(VariableName));
+        .data<GetterVarOrFuncAddr, SetterVarOrFuncAddr>(ZERO_REFL_NAME_HASH(VariableName)) \
+        .custom<::ZeroEngine::Reflection::CustomData>(#VariableName);
 #define ZERO_REFL_REGISTER_FUNCTION(ClassTypeName, FuncName, FuncAddr, FuncRetType, ...) \
     entt::meta_factory<ClassTypeName>{} \
-        .func<static_cast<FuncRetType(ClassTypeName::*)(__VA_ARGS__)>(FuncAddr)>(ZERO_REFL_NAME_HASH(FuncName));
+        .func<static_cast<FuncRetType(ClassTypeName::*)(__VA_ARGS__)>(FuncAddr)>(ZERO_REFL_NAME_HASH(FuncName)) \
+        .custom<::ZeroEngine::Reflection::CustomData>(#FuncName);
 #define ZERO_REFL_REGISTER_FUNCTION_NO_ARGS(ClassTypeName, FuncName, FuncAddr) \
     entt::meta_factory<ClassTypeName>{} \
-        .func<FuncAddr>(ZERO_REFL_NAME_HASH(FuncName));
+        .func<FuncAddr>(ZERO_REFL_NAME_HASH(FuncName)) \
+        .custom<::ZeroEngine::Reflection::CustomData>(#FuncName);
 
 namespace ZeroEngine::Reflection
 {
+    // 反射系统中相关内容的额外信息
+    struct CustomData
+    {
+        // 标识符: 变量名, 函数名等
+        std::string_view specifier;
+    };
+
     class ReflectionManager
     {
     public:
@@ -79,16 +92,6 @@ namespace ZeroEngine::Reflection
 
         // 模板部分==============================================================
     public:
-        // 禁止模板参数类型自动推导, 让用户显式指定参数
-        template<typename T>
-        struct NoDeduce
-        {
-            using type = T;
-        };
-
-        template<typename T>
-        using NoDeduce_t = typename NoDeduce<T>::type;
-
         /// 获取一个反射变量
         /// @tparam ClassType 类型名
         /// @tparam RetType 变量值类型
@@ -101,7 +104,17 @@ namespace ZeroEngine::Reflection
             if (entt::meta_data data = entt::resolve<ClassType>().data(GetTypeNameHash(varName));
                 data)
             {
-                return data.get(*instance).try_cast<NoDeduce_t<RetType>>();
+                RetType* result = nullptr;
+                if (!data.is_static())
+                {
+                    ZERO_CORE_ASSERT(instance != nullptr, "Instance should be NOT null.");
+                    result = data.get(*instance).try_cast<RetType>();
+                }
+                else
+                {
+                    result = data.get({}).try_cast<RetType>();
+                }
+                return result;
             }
 
             LOG_ERROR("[{}] No such variable {} !", __FUNCTION__, varName);
@@ -121,7 +134,15 @@ namespace ZeroEngine::Reflection
             if (entt::meta_data data = entt::resolve<ClassType>().data(GetTypeNameHash(varName));
                 data)
             {
-                return data.set(*instance, value);
+                if (!data.is_static())
+                {
+                    ZERO_CORE_ASSERT(instance != nullptr, "Instance should be NOT null.");
+                    return data.set(*instance, value);
+                }
+                else
+                {
+                    return data.set({}, value);
+                }
             }
 
             LOG_ERROR("[{}] No such variable {} !", __FUNCTION__, varName);

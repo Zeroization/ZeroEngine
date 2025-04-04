@@ -107,3 +107,22 @@ namespace ZeroEngine::Reflection
     } // namespace ZeroEngine::Reflection::TypeWrapperRegister
 } // namespace ZeroEngine::Reflection
 
+namespace nlohmann
+{
+    template<>
+    struct adl_serializer<Student>
+    {
+        static void to_json(json& ctx, const Student& instance)
+        {
+            ctx["mClassID"] = instance.mClassID;
+            ctx["mGender"] = instance.mGender;
+        }
+
+        static void from_json(const json& ctx, Student& instance)
+        {
+            instance.mClassID = ctx.at("mClassID").get<int>();
+            instance.mGender = ctx.at("mGender").get<bool>();
+        }
+    };
+}
+

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <Core/Reflection/ReflectionManager.h>
+#include <Core/Serialize/SerializeManager.h>
 
 class StudentParentClass
 {
@@ -16,6 +17,11 @@ private:
     bool mGender = false;
 
 public:
+    bool operator<(const Student& rhs) const
+    {
+        return mClassID < rhs.mClassID;
+    }
+
     ZERO_FUNCTION()
 
     static void staticTest()

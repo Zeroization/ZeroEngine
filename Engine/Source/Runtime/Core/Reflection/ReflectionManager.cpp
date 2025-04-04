@@ -11,6 +11,9 @@ namespace ZeroEngine::Reflection
 
     void ReflectionManager::Destroy()
     {
+        // 注销所有类型
+        entt::meta_reset();
+
         sInstance.reset();
     }
 
