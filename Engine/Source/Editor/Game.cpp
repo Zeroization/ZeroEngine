@@ -32,8 +32,6 @@ namespace ZeroEngine
 
         // TODO: 做完Init相关测试后删掉
         {
-            Reflection::TypeWrapperRegister::Register_Student();
-
             auto res = entt::resolve<Student>();
 
             auto ReflectMgr = Reflection::ReflectionManager::GetInstance();

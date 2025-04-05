@@ -18,7 +18,7 @@
     { \
         class Type##ClassTypeName##Operator; \
     } \
-    class ZERO_CLASS_API ClassTypeName
+    class ZERO_CLASS_API ClassTypeName __VA_ARGS__
 
 #define ZERO_BODY(ClassTypeName) \
     friend class ::ZeroEngine::Reflection::ReflectionManager; \

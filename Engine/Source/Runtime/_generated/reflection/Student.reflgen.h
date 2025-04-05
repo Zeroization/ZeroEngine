@@ -17,9 +17,11 @@ namespace ZeroEngine::Reflection
         // Base class
         static void GetBaseClassNameList_Student(std::vector<std::string>& baseClassNameList)
         {
+            baseClassNameList.reserve(1);
+            baseClassNameList.emplace_back("StudentBase");
         }
 
-        // Fields 
+        // Fields
         // Field: int mClassID
         static const char* GetFieldName_mClassID() { return "mClassID"; }
         static const char* GetFieldTypeName_mClassID() { return "int"; }
@@ -35,7 +37,7 @@ namespace ZeroEngine::Reflection
         static bool isSequence_mGender() { return false; }
         static bool isAssociate_mGender() { return false; }
 
-        // Methods 
+        // Methods
         // Method: void staticTest()
         // static const char* GetMethodName_staticTest() { return "staticTest"; }
         // Method: void constSetID(const int Val)
@@ -58,9 +60,13 @@ namespace ZeroEngine::Reflection
     // Register to reflection system
     static void TypeWrapperRegister_Student()
     {
+        LOG_DEBUG(std::format("[{}] Register class: {}", __FUNCTION__, "Student"));
+
         // Register class itself
         ZERO_REFL_REGISTER_CLASS(Student);
 
+        // Register base classes
+        ZERO_REFL_REGISTER_BASE_CLASS(Student, StudentBase);
 
         // Register class constructor
         ZERO_REFL_REGISTER_CTOR_BY_ARGS(Student);
@@ -88,7 +94,7 @@ namespace ZeroEngine::Reflection
 namespace TypeWrapperRegister
 {
     // auto-generated total register
-    void Register_Student()
+    static void Register_Student()
     {
         TypeStudentOperator::TypeWrapperRegister_Student();
     }

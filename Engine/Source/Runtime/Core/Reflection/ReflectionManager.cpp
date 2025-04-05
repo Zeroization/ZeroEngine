@@ -1,4 +1,5 @@
 ﻿#include "ReflectionManager.h"
+#include "_generated/reflection/all_reflection.h"
 
 namespace ZeroEngine::Reflection
 {
@@ -7,6 +8,9 @@ namespace ZeroEngine::Reflection
     void ReflectionManager::Create()
     {
         sInstance = std::make_shared<ReflectionManager>();
+
+        // 注册类型反射
+        TypeMetaRegister::DoMetaRegister();
     }
 
     void ReflectionManager::Destroy()

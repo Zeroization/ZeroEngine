@@ -19,7 +19,7 @@ namespace ZeroEngine::Reflection
         {
         }
 
-        // Fields 
+        // Fields
         // Field: int age
         static const char* GetFieldName_age() { return "age"; }
         static const char* GetFieldTypeName_age() { return "int"; }
@@ -28,13 +28,15 @@ namespace ZeroEngine::Reflection
         static bool isSequence_age() { return false; }
         static bool isAssociate_age() { return false; }
 
-        // Methods 
-        // Method: void Fuck()
-        // static const char* GetMethodName_Fuck() { return "Fuck"; }
+        // Methods
+        // Method: void DoWalk()
+        // static const char* GetMethodName_DoWalk() { return "DoWalk"; }
 
     // Register to reflection system
     static void TypeWrapperRegister_Animal()
     {
+        LOG_DEBUG(std::format("[{}] Register class: {}", __FUNCTION__, "Animal"));
+
         // Register class itself
         ZERO_REFL_REGISTER_CLASS(Animal);
 
@@ -47,14 +49,14 @@ namespace ZeroEngine::Reflection
         // ZERO_REFL_REGISTER_VARIABLE_BY_GETTER_AND_SETTER(Animal, &TypeFieldReflectionOperator::TypeAnimalOperator::Get_age, &TypeFieldReflectionOperator::TypeAnimalOperator::Set_age);
 
         // Register function and methods
-        ZERO_REFL_REGISTER_FUNCTION_NO_ARGS(Animal, Animal::Fuck, &Animal::Fuck);
+        ZERO_REFL_REGISTER_FUNCTION_NO_ARGS(Animal, Animal::DoWalk, &Animal::DoWalk);
     }
 };
 
 namespace TypeWrapperRegister
 {
     // auto-generated total register
-    void Register_Animal()
+    static void Register_Animal()
     {
         TypeAnimalOperator::TypeWrapperRegister_Animal();
     }
@@ -73,7 +75,7 @@ namespace nlohmann
             ctx["age"] = instance.age;
         }
 
-        static void from_json(const json& ctx, Student& instance)
+        static void from_json(const json& ctx, Animal& instance)
         {
             instance.age = ctx.at("age").get<int>();
         }
