@@ -1,12 +1,11 @@
 ﻿#pragma once
-#include <Core/Reflection/ReflectionManager.h>
-#include <Core/Serialize/SerializeManager.h>
+#include <Function/Script/NativeCpp/CoreMinimal.h>
 
-class StudentParentClass
+class StudentBase
 {
 };
 
-ZERO_CLASS(Student, : public StudentParentClass)
+ZERO_CLASS(Student, : public StudentBase)
 {
     ZERO_BODY(Student)
 
@@ -38,6 +37,7 @@ public:
     }
 
     virtual ~Student() = default;
+
     ZERO_FUNCTION()
     void constSetID(const int Val);
 

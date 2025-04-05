@@ -4,7 +4,7 @@
 
 // 用于反射的宏
 #ifdef __REFLECTION_PARSER__
-#define ZERO_CLASS_API __attribute__((annotate("reflect-class")))
+#define ZERO_CLASS_API __attribute__((annotate("reflect-class;")))
 #define ZERO_PROPERTY(...) __attribute__((annotate("reflect-property; " #__VA_ARGS__)))
 #define ZERO_FUNCTION(...) __attribute__((annotate("reflect-function; " #__VA_ARGS__)))
 #else
@@ -18,7 +18,7 @@
     { \
         class Type##ClassTypeName##Operator; \
     } \
-    class ZERO_CLASS_API ClassTypeName __VA_ARGS__
+    class ZERO_CLASS_API ClassTypeName
 
 #define ZERO_BODY(ClassTypeName) \
     friend class ::ZeroEngine::Reflection::ReflectionManager; \
@@ -69,6 +69,7 @@ namespace ZeroEngine::Reflection
     {
         // 标识符: 变量名, 函数名等
         std::string_view specifier;
+        // TODO: 一个维护MetaTags(Category, BlueprintsOnly等)的数据结构
     };
 
     class ReflectionManager

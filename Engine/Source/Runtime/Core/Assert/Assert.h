@@ -8,7 +8,7 @@
 #elif defined(ZERO_COMPILER_CLANG)
     #define ZERO_DEBUG_BREAK __builtin_debugtrap()
 #else
-    #defineZERO_DEBUG_BREAK
+    #define ZERO_DEBUG_BREAK
 #endif
 
 // Assertions

@@ -9,6 +9,8 @@ file(GLOB_RECURSE SOURCE_FILES "*.cpp" "*.hpp")
 
 add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
+set(ZEROENGINE_RUNTIME_HEADS "${HEADER_FILES}" PARENT_SCOPE)
+
 target_precompile_headers(${TARGET_NAME} PUBLIC pch.h)
 target_include_directories(${TARGET_NAME} PUBLIC .)
 target_link_libraries(${TARGET_NAME}
