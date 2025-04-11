@@ -3,6 +3,7 @@
 #pragma once
 
 // Auto-generated include files:
+#include "EngineConfig.reflgen.h"
 #include "Animal.reflgen.h"
 #include "Student.reflgen.h"
 
@@ -11,6 +12,7 @@ namespace ZeroEngine::Reflection::TypeMetaRegister
     static void DoMetaRegister()
     {
         // Auto-generated register functions
+        TypeWrapperRegister::Register_EngineConfig();
         TypeWrapperRegister::Register_Animal();
         TypeWrapperRegister::Register_Student();
     }

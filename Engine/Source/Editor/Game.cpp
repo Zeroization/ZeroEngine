@@ -9,8 +9,10 @@
 // TODO: 测试完记得删掉
 #include <_generated/reflection/Student.reflgen.h>
 
+#include "Core/GlobalDataManager.h"
 #include "Core/Event/Event.h"
 #include "Core/Event/EventManager.h"
+#include "Core/FileSystem/FileSystem.h"
 
 namespace ZeroEngine
 {
@@ -22,6 +24,14 @@ namespace ZeroEngine
     {
         Logger::Init();
         LOG_INFO(std::format("[{}] Engine Init =====================================", __FUNCTION__));
+
+        auto engineWorkDirPath = FileSystem::GetCurExeFilePath().parent_path().parent_path();
+        LOG_INFO(std::format("[{}] Engine Working Dir: {}", __FUNCTION__, engineWorkDirPath.string()));
+        if (!GlobalDataManager::Create(engineWorkDirPath))
+        {
+            LOG_CRITICAL(std::format("[{}] Can't init global config!", __FUNCTION__));
+            return false;
+        }
 
         Reflection::ReflectionManager::Create();
         SerializeManager::Create();
@@ -36,66 +46,6 @@ namespace ZeroEngine
 
         // TODO: 做完Init相关测试后删掉
         {
-            struct TestListener
-            {
-                void OnT1Event(Event& e)
-                {
-                    LOG_DEBUG(
-                        std::format("T1 Callback, Event timestamp: {}, priority: {}, value: {}",
-                            e.mCurFrameTime, e.ToString(), val));
-                }
-
-                void OnT2Event(Event& e)
-                {
-                    LOG_DEBUG(
-                        std::format("T2 Callback, Event timestamp: {}, type: {}, value: {}",
-                            e.mCurFrameTime, e.ToString(), val));
-                }
-
-                int val = 0;
-            };
-            TestListener t1(3), t2(66);
-
-            auto eventMgr = EventManager::GetInstance();
-
-            EventMetaData t1Meta = {
-                EventType::Builtin_KeyboardInput,
-                static_cast<uint8_t>(
-                    EventCategory::Builtin_InputEvent),
-                EventPriority::High
-            };
-            EventMetaData t2Meta = {
-                EventType::None,
-                static_cast<uint8_t>(
-                    EventCategory::Builtin_OtherEvent),
-                EventPriority::Low
-            };
-            eventMgr->BindListener<TestListener, &TestListener::OnT1Event>(t1, t1Meta);
-            eventMgr->BindListener<TestListener, &TestListener::OnT2Event>(t2, t2Meta);
-
-            Event T1Event1(EventType::Builtin_KeyboardInput,
-                           static_cast<uint8_t>(EventCategory::Builtin_InputEvent),
-                           EventPriority::High);
-            Event T1Event2(EventType::Builtin_KeyboardInput,
-                           static_cast<uint8_t>(EventCategory::Builtin_InputEvent),
-                           EventPriority::High);
-            Event T2Event1(EventType::None,
-                           static_cast<uint8_t>(EventCategory::Builtin_OtherEvent),
-                           EventPriority::Low);
-            Event T1Event3(EventType::Builtin_KeyboardInput,
-                           static_cast<uint8_t>(EventCategory::Builtin_InputEvent),
-                           EventPriority::High);
-            Event T2Event2(EventType::None,
-                           static_cast<uint8_t>(EventCategory::Builtin_OtherEvent),
-                           EventPriority::Low);
-
-            eventMgr->EnqueueEvent(std::move(T2Event1));
-            eventMgr->EnqueueEvent(std::move(T2Event2));
-            eventMgr->EnqueueEvent(std::move(T1Event1));
-            eventMgr->EnqueueEvent(std::move(T1Event2));
-            eventMgr->EnqueueEvent(std::move(T1Event3));
-
-            eventMgr->UpdateEventQueue();
         }
 
         return true;
@@ -136,6 +86,7 @@ namespace ZeroEngine
         EventManager::Destroy();
         SerializeManager::Destroy();
         Reflection::ReflectionManager::Destroy();
+        GlobalDataManager::Destroy();
     }
 
     void Game::LogicTick(float deltaTime)

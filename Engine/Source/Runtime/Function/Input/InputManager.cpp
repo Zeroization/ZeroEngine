@@ -71,6 +71,7 @@ namespace ZeroEngine
         OldState = CurState;
         CurState = newState;
 
+        // TODO: 接入事件系统, Trigger事件
         LOG_DEBUG(std::format("[{}] Key {} {}.", __FUNCTION__, static_cast<int>(key), static_cast<int>(newState)));
     }
 
@@ -101,6 +102,7 @@ namespace ZeroEngine
         OldState = CurState;
         CurState = newState;
 
+        // TODO: 接入事件系统, Trigger事件
         LOG_DEBUG(std::format("[{}] Key {} {}.", __FUNCTION__, static_cast<int>(mb), static_cast<int>(newState)));
     }
 

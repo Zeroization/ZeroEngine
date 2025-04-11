@@ -24,6 +24,8 @@ namespace ZeroEngine
     class FileSystem
     {
     public:
+        /// 获取当前程序的运行目录
+        static std::filesystem::path GetCurExeFilePath();
         /// 获取引擎的工作目录
         static std::filesystem::path GetWorkingDir();
         /// 设置引擎的工作目录
@@ -57,10 +59,16 @@ namespace ZeroEngine
         static FileSysResult FileTryOpen(const std::filesystem::path& filepath);
         /// 尝试打开文件, 失败后会在给定时间后再尝试打开一次
         static FileSysResult FileTryOpenAndWait(const std::filesystem::path& filepath, uint64_t ms = 100);
-        /// 写文件(二进制)
-        static bool WriteBytes(const std::filesystem::path& filepath, const std::vector<unsigned char>& data);
+        /// 写文件(二进制, 默认为覆盖模式)
+        static bool WriteBytes(const std::filesystem::path& filepath, const std::vector<unsigned char>& data,
+                               bool appendWrite = false);
+        /// 写文件(文本, 默认为覆盖模式)
+        static bool WriteText(const std::filesystem::path& filepath, const std::string& content,
+                              bool appendWrite = false);
         /// 读文件(二进制), 返回结果在传参中
         static bool ReadBytes(const std::filesystem::path& filepath, std::vector<unsigned char>& data);
+        /// 读文件(文本)
+        static bool ReadText(const std::filesystem::path& filepath, std::string& content);
         /// 获取文件的唯一名字, 例如出现重命名情况, 返回A(1).txt
         static std::filesystem::path GetUniqueFileName(const std::filesystem::path& filepath);
         /// 获取文件的上次编辑时间

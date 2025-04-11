@@ -1,6 +1,8 @@
 #include "GlfwWindowManager.h"
 
 #include "Function/Input/InputManager.h"
+#include "Core/GlobalDataManager.h"
+
 
 namespace ZeroEngine
 {
@@ -23,7 +25,11 @@ namespace ZeroEngine
 #endif
 
         // TODO: EngineConfig写好后覆盖设置
-        WindowPtr = glfwCreateWindow(1280, 720, windowName.c_str(), nullptr, nullptr);
+        auto globalDataMgr = GlobalDataManager::GetInstance();
+        auto engineCfg = globalDataMgr->GetGlobalDataRef()->engineCfg;
+        WindowPtr = glfwCreateWindow(engineCfg.mWindowWidth,
+                                     engineCfg.mWindowHeight,
+                                     windowName.c_str(), nullptr, nullptr);
         if (WindowPtr == nullptr)
         {
             const char* errDesc;
@@ -79,7 +85,8 @@ namespace ZeroEngine
         if (glfwRawMouseMotionSupported() == GLFW_TRUE)
         {
             glfwSetInputMode(WindowPtr, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-        } else
+        }
+        else
         {
             LOG_WARN("[GLFW] This platform doesn't support raw mouse motion.");
         }
@@ -115,12 +122,12 @@ namespace ZeroEngine
         glfwTerminate();
     }
 
-    void *GlfwWindowManager::GetCurrentContext()
+    void* GlfwWindowManager::GetCurrentContext()
     {
         return glfwGetCurrentContext();
     }
 
-    void *GlfwWindowManager::GetWindowPtr()
+    void* GlfwWindowManager::GetWindowPtr()
     {
         return WindowPtr;
     }

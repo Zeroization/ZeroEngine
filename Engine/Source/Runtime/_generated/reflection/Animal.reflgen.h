@@ -42,7 +42,6 @@ namespace ZeroEngine::Reflection
 
 
         // Register class constructor
-        ZERO_REFL_REGISTER_CTOR_BY_ARGS(Animal);
 
         // Register field members and variables
         ZERO_REFL_REGISTER_VARIABLE(Animal, Animal::age, &Animal::age);

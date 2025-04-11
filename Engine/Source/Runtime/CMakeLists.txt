@@ -25,7 +25,6 @@ target_link_libraries(${TARGET_NAME}
 
 target_compile_definitions(${TARGET_NAME}
         PUBLIC $<$<CONFIG:Debug>:ZERO_DEBUG_ENABLE>
-        PUBLIC ZERO_ASSET_DIR="${ENGINE_ASSET_DIR}"
         # EnTT
         PUBLIC ENTT_USE_ATOMIC
 )

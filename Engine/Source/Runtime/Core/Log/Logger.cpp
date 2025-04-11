@@ -9,7 +9,7 @@ namespace ZeroEngine
     void Logger::Init()
     {
         auto ConsoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        auto FileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("Runtime.log", true);
+        auto FileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("Logs/Runtime.log", true);
         spdlog::logger Logger("", {ConsoleSink, FileSink});
         CoreLogger = std::make_shared<spdlog::logger>(Logger);
         CoreLogger->set_pattern("%^[%H:%M:%S.%e][thread-%t][%L]%$%v");

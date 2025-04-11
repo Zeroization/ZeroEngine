@@ -13,6 +13,26 @@
 
 namespace ZeroEngine
 {
+    std::filesystem::path FileSystem::GetCurExeFilePath()
+    {
+#ifdef ZERO_PLATFORM_DESKTOP
+#   ifdef ZERO_OS_WINDOWS
+        char buffer[MAX_PATH];
+        GetModuleFileNameA(NULL, buffer, MAX_PATH);
+#   elif defined(ZERO_OS_LINUX)
+        // TODO
+#   endif
+        std::filesystem::path path(buffer);
+        if (IsDirectory(path))
+        {
+            return path;
+        }
+        return path.parent_path();
+#else
+        return "TODO"
+#endif
+    }
+
     std::filesystem::path FileSystem::GetWorkingDir()
     {
         return std::filesystem::current_path();
@@ -213,9 +233,11 @@ namespace ZeroEngine
         return true;
     }
 
-    bool FileSystem::WriteBytes(const std::filesystem::path& filepath, const std::vector<unsigned char>& data)
+    bool FileSystem::WriteBytes(const std::filesystem::path& filepath, const std::vector<unsigned char>& data,
+                                bool appendWrite)
     {
-        std::ofstream stream(filepath, std::ios::binary | std::ios::trunc);
+        const auto mode = appendWrite ? (std::ios::binary | std::ios::app) : (std::ios::binary | std::ios::trunc);
+        std::ofstream stream(filepath, mode);
         if (!stream || !stream.is_open())
         {
             LOG_ERROR(std::format("[{}] Can't open file: {}", __FUNCTION__, filepath.string()));
@@ -225,6 +247,23 @@ namespace ZeroEngine
 
         stream.write(reinterpret_cast<const char *>(data.data()),
                      static_cast<long long>(data.size()));
+        stream.close();
+        return true;
+    }
+
+    bool FileSystem::WriteText(const std::filesystem::path& filepath, const std::string& content,
+                               bool appendWrite)
+    {
+        const auto mode = appendWrite ? std::ios::app : std::ios::trunc;
+        std::ofstream stream(filepath, mode);
+        if (!stream.is_open())
+        {
+            LOG_ERROR(std::format("[{}] Can't open file: {}", __FUNCTION__, filepath.string()));
+            stream.close();
+            return false;
+        }
+
+        stream << content;
         stream.close();
         return true;
     }
@@ -256,6 +295,25 @@ namespace ZeroEngine
         return true;
     }
 
+    bool FileSystem::ReadText(const std::filesystem::path& filepath, std::string& content)
+    {
+        std::ifstream stream(filepath);
+        if (!stream.is_open())
+        {
+            LOG_ERROR(std::format("[{}] Can't read file: {}", __FUNCTION__, filepath.string()));
+            stream.close();
+            return false;
+        }
+
+        // 一次性读取全部内容（自动处理换行符）
+        content.assign(
+            (std::istreambuf_iterator<char>(stream)),
+            (std::istreambuf_iterator<char>())
+        );
+        stream.close();
+        return true;
+    }
+
     std::filesystem::path FileSystem::GetUniqueFileName(const std::filesystem::path& filepath)
     {
         // 没有重名文件, 可以直接创建
@@ -281,7 +339,8 @@ namespace ZeroEngine
             if (Exists(filepath.parent_path() / newFileName))
             {
                 return checkID(checkID);
-            } else
+            }
+            else
             {
                 return filepath.parent_path() / newFileName;
             }

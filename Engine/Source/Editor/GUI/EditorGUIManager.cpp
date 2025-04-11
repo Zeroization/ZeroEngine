@@ -1,10 +1,13 @@
 ﻿#include "EditorGUIManager.h"
+
 #ifdef ZERO_GRAPHIC_OPENGL
 #include "EditorGUIManager_OpenGLImpl.h"
 #endif
+
 #include "Function/Render/Window/WindowManager.h"
 #include "Panels/EditorGUIPanelManager.h"
 #include "Widgets/EditorGUIWidgets.hpp"
+#include "Core/FileSystem/FileSystem.h"
 #include "imgui_internal.h"
 
 #define CHECK_GUI_SHORTCUT(name, shortcut, doAction) \
@@ -46,21 +49,21 @@ namespace ZeroEngine
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		// 设置输入相关
-		ImGuiIO &io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // 允许键盘输入
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // 允许控件Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // 允许控件出去到glfw窗口外
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // 允许控件Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // 允许控件出去到glfw窗口外
 		// 设置控件受控制相关
 		io.ConfigWindowsMoveFromTitleBarOnly = true;
 		io.ConfigWindowsResizeFromEdges = true;
 		// 设置字体
-		const std::string assetDir(ZERO_ASSET_DIR);
+		const std::string assetDir = (FileSystem::GetWorkingDir() / "BuiltinAssets").string();
 		io.Fonts->AddFontFromFileTTF((assetDir + "/Fonts/OPPOSansM.ttf").c_str(), 18.0f, nullptr,
 		                             io.Fonts->GetGlyphRangesChineseFull());
 		// 设置主题
 		// Ref: https://github.com/qiutang98/chord/blob/master/source/ui/ui.cpp
 		ImGui::StyleColorsDark();
-		ImGuiStyle &style = ImGui::GetStyle();
+		ImGuiStyle& style = ImGui::GetStyle();
 		style.AntiAliasedLines = true;
 		style.WindowMenuButtonPosition = ImGuiDir_Left;
 		style.WindowPadding = ImVec2(1, 1);

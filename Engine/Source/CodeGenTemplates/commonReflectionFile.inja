@@ -61,10 +61,11 @@ namespace ZeroEngine::Reflection
 ## endif
 
         // Register class constructor
-        ZERO_REFL_REGISTER_CTOR_BY_ARGS({{ class_def.class_name }});
 ## for class_ctor_data in class_def.class_ctor_defines
 ## if class_ctor_data.class_ctor_has_args
         ZERO_REFL_REGISTER_CTOR_BY_ARGS({{ class_def.class_name }}{% for arg in class_ctor_data.class_ctor_args %}, {{ arg.arg_type }}{% endfor %});
+## else
+        ZERO_REFL_REGISTER_CTOR_BY_ARGS({{ class_def.class_name }});
 ## endif
 ## endfor
 
@@ -103,9 +104,9 @@ namespace nlohmann
 {
 ## for class_def in class_defines
     template<>
-    struct adl_serializer<{{ class_def.class_name }}>
+    struct adl_serializer<{% if class_def.class_is_internal %}ZeroEngine::{% endif %}{{ class_def.class_name }}>
     {
-        static void to_json(json& ctx, const {{ class_def.class_name }}& instance)
+        static void to_json(json& ctx, const {% if class_def.class_is_internal %}ZeroEngine::{% endif %}{{ class_def.class_name }}& instance)
         {
             // Register field members and variables
 ## for field_def in class_def.class_field_defines
@@ -113,7 +114,7 @@ namespace nlohmann
 ## endfor
         }
 
-        static void from_json(const json& ctx, {{ class_def.class_name }}& instance)
+        static void from_json(const json& ctx, {% if class_def.class_is_internal %}ZeroEngine::{% endif %}{{ class_def.class_name }}& instance)
         {
 ## for field_def in class_def.class_field_defines
             instance.{{ field_def.class_field_name }} = ctx.at("{{ field_def.class_field_name }}").get<{{ field_def.class_field_type }}>();
