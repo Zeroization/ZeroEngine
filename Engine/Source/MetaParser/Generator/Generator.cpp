@@ -25,6 +25,8 @@ namespace MetaParser::Generator
         inOutData["class_base_class_size"] = src->m_baseClasses.size();
         inOutData["class_need_register"] = true;
 
+        inOutData["class_is_internal"] = src->GetMetaData().ContainsTag(BasicTag::EngineInternal);
+
         inOutData["class_has_base"] = false;
         if (const size_t baseClassSize = inOutData["class_base_class_size"].get<size_t>(); baseClassSize > 0)
         {
@@ -58,6 +60,7 @@ namespace MetaParser::Generator
 
     void BaseGenerator::GenClassFieldRenderData(std::shared_ptr<Class>& parent, Inja::json& inOutData)
     {
+        inOutData = inja::json::array();
         for (const auto& field: parent->m_fields)
         {
             Inja::json fieldDefine;
@@ -79,6 +82,7 @@ namespace MetaParser::Generator
 
     void BaseGenerator::GenClassMethodRenderData(std::shared_ptr<Class>& parent, Inja::json& inOutData)
     {
+        inOutData = inja::json::array();
         for (const auto& method: parent->m_methods)
         {
             Inja::json methodDefine;

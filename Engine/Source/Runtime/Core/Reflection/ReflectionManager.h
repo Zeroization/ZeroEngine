@@ -5,20 +5,31 @@
 // 用于反射的宏
 #ifdef __REFLECTION_PARSER__
 #define ZERO_CLASS_API __attribute__((annotate("reflect-class;")))
+#define ZERO_INTERNAL_CLASS_API __attribute__((annotate("reflect-class; EngineInternal")))
 #define ZERO_PROPERTY(...) __attribute__((annotate("reflect-property; " #__VA_ARGS__)))
 #define ZERO_FUNCTION(...) __attribute__((annotate("reflect-function; " #__VA_ARGS__)))
 #else
 #define ZERO_CLASS_API
+#define ZERO_INTERNAL_CLASS_API
 #define ZERO_PROPERTY(...)
 #define ZERO_FUNCTION(...)
 #endif
 
+// Native脚本类用到的反射
 #define ZERO_CLASS(ClassTypeName, ...) \
     namespace ZeroEngine::Reflection \
     { \
         class Type##ClassTypeName##Operator; \
     } \
     class ZERO_CLASS_API ClassTypeName __VA_ARGS__
+
+// 引擎内部类用到的反射
+#define ZERO_INTERNAL_CLASS(ClassTypeName, ...) \
+    namespace Reflection \
+    { \
+        class Type##ClassTypeName##Operator; \
+    } \
+    class ZERO_INTERNAL_CLASS_API ClassTypeName __VA_ARGS__
 
 #define ZERO_BODY(ClassTypeName) \
     friend class ::ZeroEngine::Reflection::ReflectionManager; \
@@ -99,7 +110,7 @@ namespace ZeroEngine::Reflection
         /// @param varName 变量名
         /// @param instance 要获取变量的实例
         /// @return 指向该对象的指针, 没有就是nullptr
-        template<typename ClassType, typename RetType>
+        template <typename ClassType, typename RetType>
         NoDeduce_t<RetType>* GetVariable(std::string_view varName, NoDeduce_t<ClassType>* instance)
         {
             if (entt::meta_data data = entt::resolve<ClassType>().data(GetTypeNameHash(varName));
@@ -129,7 +140,7 @@ namespace ZeroEngine::Reflection
         /// @param instance 要设置变量的实例
         /// @param value 变量值
         /// @return 操作是否成功
-        template<typename ClassType, typename VarType>
+        template <typename ClassType, typename VarType>
         bool SetVariable(std::string_view varName, NoDeduce_t<ClassType>* instance, const NoDeduce_t<VarType>& value)
         {
             if (entt::meta_data data = entt::resolve<ClassType>().data(GetTypeNameHash(varName));
@@ -157,7 +168,7 @@ namespace ZeroEngine::Reflection
         /// @param instance 调用的对象示例
         /// @param args 参数列表
         /// @return 指向函数返回值的指针, 没有就是nullptr
-        template<typename ClassType, typename RetType, typename... Args>
+        template <typename ClassType, typename RetType, typename... Args>
         NoDeduce_t<RetType>* InvokeFunction(std::string_view funcName, NoDeduce_t<ClassType>* instance,
                                             NoDeduce_t<Args>... args)
         {
@@ -188,7 +199,7 @@ namespace ZeroEngine::Reflection
         /// @param instance 该类型的示例
         /// @param args 函数参数列表
         /// @return 调用的返回值
-        template<typename ClassType, typename RetType, typename... Args>
+        template <typename ClassType, typename RetType, typename... Args>
         entt::meta_any InternalInvokeFunction(const entt::meta_func& func, ClassType& instance, Args&&... args)
         {
             // 匹配返回值类型
