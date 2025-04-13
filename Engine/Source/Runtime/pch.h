@@ -86,13 +86,13 @@
 
 // 辅助模板===========================
 // 禁止模板参数类型自动推导, 让用户显式指定参数
-template<typename T>
+template <typename T>
 struct NoDeduce
 {
     using type = T;
 };
 
-template<typename T>
+template <typename T>
 using NoDeduce_t = typename NoDeduce<T>::type;
 
 // 自己的库===========================
