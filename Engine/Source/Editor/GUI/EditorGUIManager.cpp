@@ -33,6 +33,7 @@ namespace ZeroEngine
 
 	void EditorGUIManager::Destroy()
 	{
+		EditorGUIPanelManager::Destroy();
 		Instance.reset();
 	}
 
@@ -164,6 +165,7 @@ namespace ZeroEngine
 	{
 		// TODO: 渲染各种控件和面板
 		MainDockingWidget();
+		EditorGUIPanelManager::GetInstance()->EditorPanelRender();
 
 		ImGui::Render();
 	}
