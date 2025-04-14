@@ -22,9 +22,11 @@ namespace ZeroEngine
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#   if defined(ZERO_DEBUG_ENABLE)
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#   endif
 #endif
 
-        // TODO: EngineConfig写好后覆盖设置
         auto globalDataMgr = GlobalDataManager::GetInstance();
         auto engineCfg = globalDataMgr->GetGlobalDataRef()->engineCfg;
         WindowPtr = glfwCreateWindow(engineCfg.mWindowWidth,
