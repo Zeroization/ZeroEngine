@@ -7,6 +7,7 @@ namespace ZeroEngine
     /// 事件类型
     enum class EventType : uint8_t
     {
+        /// 范围: 0 ~ 255
         None = 0,
         /// Builtin_InputEvent
         Builtin_KeyboardInput,

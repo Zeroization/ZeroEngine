@@ -289,6 +289,7 @@ namespace ZeroEngine
             return false;
         }
 
+        data.resize(static_cast<size_t>(size));
         stream.read(reinterpret_cast<char *>(data.data()), size);
         stream.close();
 

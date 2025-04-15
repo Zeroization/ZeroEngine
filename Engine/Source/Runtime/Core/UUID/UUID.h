@@ -6,7 +6,7 @@ namespace ZeroEngine
     {
     public:
         UUID();
-        UUID(uint64_t uuid);
+        explicit UUID(uint64_t uuid);
         UUID(const UUID& copy);
 
         operator uint64_t() { return m_UUID; }
@@ -20,7 +20,7 @@ namespace ZeroEngine
     {
     public:
         UUID32();
-        UUID32(uint32_t uuid);
+        explicit UUID32(uint32_t uuid);
         UUID32(const UUID32& copy);
 
         operator uint32_t() { return m_UUID; }
