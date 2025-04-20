@@ -13,6 +13,7 @@ namespace ZeroEngine
         // EventType
         sInstance->mStrToID["EventType::None"] = Identifier("EventType::None");
         sInstance->mStrToID["EventType::Builtin_KeyboardInput"] = Identifier("EventType::Builtin_KeyboardInput");
+        sInstance->mStrToID["EventType::Builtin_WindowResize"] = Identifier("EventType::Builtin_WindowResize");
 
         // EventPriority
         sInstance->mStrToID["EventPriority::High"] = Identifier("EventPriority::High");
@@ -39,6 +40,8 @@ namespace ZeroEngine
             case EventType::None: return TryGetHash("EventType::None");
             /// Builtin_InputEvent
             case EventType::Builtin_KeyboardInput: return TryGetHash("EventType::Builtin_KeyboardInput");
+            /// Builtin_WindowEvent
+            case EventType::Builtin_WindowResize: return TryGetHash("EventType::Builtin_WindowResize");
             default:
             {
                 LOG_ERROR(std::format("[{}] Unexpected input enum, plz fix src code.", __FUNCTION__));

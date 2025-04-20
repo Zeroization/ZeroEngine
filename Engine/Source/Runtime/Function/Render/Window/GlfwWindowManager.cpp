@@ -2,6 +2,7 @@
 
 #include "Function/Input/InputManager.h"
 #include "Core/GlobalDataManager.h"
+#include "Core/Event/EventManager.h"
 
 
 namespace ZeroEngine
@@ -54,6 +55,19 @@ namespace ZeroEngine
         glfwSetErrorCallback([](int error, const char* desc) -> void
         {
             LOG_ERROR(std::format("[GLFW] Error code: {}, description: {}", error, desc));
+        });
+
+        // 绑定GLFW窗口大小改变回调
+        glfwSetWindowSizeCallback(WindowPtr, [](GLFWwindow* window, int width, int height)
+        {
+            // LOG_DEBUG(std::format("[{}] new width: {}; new height: {}", __FUNCTION__, width, height));
+            Event windowResizeEvent(EventType::Builtin_WindowResize,
+                                    static_cast<uint8_t>(EventCategory::Builtin_WindowEvent));
+            windowResizeEvent.mArgs["width"] = width;
+            windowResizeEvent.mArgs["height"] = height;
+
+            auto eventMgr = EventManager::GetInstance();
+            eventMgr->TriggerEvent(std::move(windowResizeEvent));
         });
 
         // 绑定键盘按键回调

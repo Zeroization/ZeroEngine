@@ -66,6 +66,39 @@ namespace ZeroEngine
             return connectDeferred && connectImmediate;
         }
 
+        /// @copydoc BindListener
+        template <typename ListenerTy, auto CallbackFn>
+        bool BindListener(NoDeduce_t<ListenerTy>* listener, EventMetaData& metadata)
+        {
+            // 事件队列: 按优先级分为三个队列
+            entt::connection connectDeferred;
+            if (metadata.Priority == EventPriority::High)
+            {
+                connectDeferred = mEventDispatcher
+                                  .sink<Event>(GetEventPriorityHash(EventPriority::High))
+                                  .connect<CallbackFn, ListenerTy>(*listener);
+            }
+            else if (metadata.Priority == EventPriority::Medium)
+            {
+                connectDeferred = mEventDispatcher
+                                  .sink<Event>(GetEventPriorityHash(EventPriority::Medium))
+                                  .connect<CallbackFn, ListenerTy>(*listener);
+            }
+            else
+            {
+                connectDeferred = mEventDispatcher
+                                  .sink<Event>(GetEventPriorityHash(EventPriority::Low))
+                                  .connect<CallbackFn, ListenerTy>(*listener);
+            }
+
+            // 立即事件: 按事件类型分类
+            auto connectImmediate = mEventDispatcher
+                                    .sink<Event>(GetEventTypeHash(metadata.Type))
+                                    .connect<CallbackFn, ListenerTy>(*listener);
+
+            return connectDeferred && connectImmediate;
+        }
+
         /// 解绑监听器的所有回调
         /// @tparam ListenerTy 监听器类型
         /// @param listener 监听器实例
