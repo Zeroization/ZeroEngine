@@ -17,9 +17,9 @@ namespace ZeroEngine
 
     public:
         ZERO_PROPERTY()
-        int mWindowWidth;
+        uint32_t mWindowWidth;
 
         ZERO_PROPERTY()
-        int mWindowHeight;
+        uint32_t mWindowHeight;
     };
 }

@@ -1,5 +1,6 @@
 ﻿#include "_generated/reflection/EngineConfig.reflgen.h"
 #include "Core/FileSystem/FileSystem.h"
+#include "Core/Serialize/SerializeManager.h"
 
 namespace ZeroEngine
 {
@@ -11,7 +12,13 @@ namespace ZeroEngine
             if (FileSystem::ReadText(engineCfgDir / "EngineConfig.json", content))
             {
                 nlohmann::json cfgJson = nlohmann::json::parse(content);
-                return cfgJson.get<EngineConfig>();
+
+                auto& seriMgr = SerializeManager::GetInstance();
+                if (EngineConfig ret;
+                    seriMgr.DeserializeFromJSON<EngineConfig>(cfgJson, ret))
+                {
+                    return ret;
+                }
             }
         }
 
@@ -26,15 +33,23 @@ namespace ZeroEngine
 
     bool EngineConfig::TrySaveEngineCfg(const EngineConfig& engineCfg)
     {
-        nlohmann::json jsonData = engineCfg;
-        std::string content = jsonData.dump(4);
-
-        auto configDirPath = FileSystem::GetWorkingDir() / "Source/Editor/Configs";
-        if (!FileSystem::Exists(configDirPath) && !FileSystem::CreateDir(configDirPath))
+        auto& seriMgr = SerializeManager::GetInstance();
+        if (nlohmann::json engineCfgJson;
+            seriMgr.SerializeToJSON<EngineConfig>(engineCfgJson, engineCfg))
         {
-            return false;
+            std::string content = engineCfgJson.dump(4);
+
+            auto configDirPath = FileSystem::GetWorkingDir() / "Source/Editor/Configs";
+            if (!FileSystem::Exists(configDirPath) && !FileSystem::CreateDir(configDirPath))
+            {
+                LOG_CRITICAL(std::format("[{}] Can't Save engineCfg!", __FUNCTION__));
+                return false;
+            }
+
+            return FileSystem::WriteText(configDirPath / "EngineConfig.json", content);
         }
 
-        return FileSystem::WriteText(configDirPath / "EngineConfig.json", content);
+        LOG_CRITICAL(std::format("[{}] Can't Serialize engineCfg!", __FUNCTION__));
+        return false;
     }
 }
