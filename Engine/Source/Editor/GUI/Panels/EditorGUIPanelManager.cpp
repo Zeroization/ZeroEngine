@@ -7,29 +7,26 @@
 
 namespace ZeroEngine
 {
-    std::shared_ptr<EditorGUIPanelManager> EditorGUIPanelManager::sInstance = nullptr;
 
     void EditorGUIPanelManager::Create()
     {
-        sInstance = std::make_shared<EditorGUIPanelManager>();
-
-        sInstance->mPanels.emplace_back(std::make_unique<EditorGUIViewportPanel>());
-        sInstance->mPanels.emplace_back(std::make_unique<EditorGUIScenePanel>());
-        sInstance->mPanels.emplace_back(std::make_unique<EditorGUIContentBrowserPanel>());
-        sInstance->mPanels.emplace_back(std::make_unique<EditorGUIOutlinerPanel>());
+        GetInstance().mPanels.emplace_back(std::make_unique<EditorGUIViewportPanel>());
+        GetInstance().mPanels.emplace_back(std::make_unique<EditorGUIScenePanel>());
+        GetInstance().mPanels.emplace_back(std::make_unique<EditorGUIContentBrowserPanel>());
+        GetInstance().mPanels.emplace_back(std::make_unique<EditorGUIOutlinerPanel>());
     }
 
     void EditorGUIPanelManager::Destroy()
     {
-        for (auto& panel: sInstance->mPanels)
+        for (auto& panel: GetInstance().mPanels)
         {
             panel.reset();
         }
-        sInstance.reset();
     }
 
-    std::shared_ptr<EditorGUIPanelManager> EditorGUIPanelManager::GetInstance()
+    EditorGUIPanelManager& EditorGUIPanelManager::GetInstance()
     {
+        static EditorGUIPanelManager sInstance;
         return sInstance;
     }
 

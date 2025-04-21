@@ -4,32 +4,28 @@
 
 namespace ZeroEngine
 {
-    std::shared_ptr<EventManager> EventManager::sInstance = nullptr;
-
     void EventManager::Create()
     {
-        sInstance = std::make_shared<EventManager>();
-
         // EventType
-        sInstance->mStrToID["EventType::None"] = Identifier("EventType::None");
-        sInstance->mStrToID["EventType::Builtin_KeyboardInput"] = Identifier("EventType::Builtin_KeyboardInput");
-        sInstance->mStrToID["EventType::Builtin_WindowResize"] = Identifier("EventType::Builtin_WindowResize");
+        GetInstance().mStrToID["EventType::None"] = Identifier("EventType::None");
+        GetInstance().mStrToID["EventType::Builtin_KeyboardInput"] = Identifier("EventType::Builtin_KeyboardInput");
+        GetInstance().mStrToID["EventType::Builtin_WindowResize"] = Identifier("EventType::Builtin_WindowResize");
 
         // EventPriority
-        sInstance->mStrToID["EventPriority::High"] = Identifier("EventPriority::High");
-        sInstance->mStrToID["EventPriority::Medium"] = Identifier("EventPriority::Medium");
-        sInstance->mStrToID["EventPriority::Low"] = Identifier("EventPriority::Low");
+        GetInstance().mStrToID["EventPriority::High"] = Identifier("EventPriority::High");
+        GetInstance().mStrToID["EventPriority::Medium"] = Identifier("EventPriority::Medium");
+        GetInstance().mStrToID["EventPriority::Low"] = Identifier("EventPriority::Low");
     }
 
     void EventManager::Destroy()
     {
-        sInstance->mEventDispatcher.clear();
-        sInstance->mStrToID.clear();
-        sInstance.reset();
+        GetInstance().mEventDispatcher.clear();
+        GetInstance().mStrToID.clear();
     }
 
-    std::shared_ptr<EventManager> EventManager::GetInstance()
+    EventManager& EventManager::GetInstance()
     {
+        static EventManager sInstance;
         return sInstance;
     }
 
@@ -67,9 +63,9 @@ namespace ZeroEngine
 
     uint32_t EventManager::TryGetHash(const std::string& str)
     {
-        if (sInstance->mStrToID.contains(str))
+        if (GetInstance().mStrToID.contains(str))
         {
-            return sInstance->mStrToID[str].GetHashVal();
+            return GetInstance().mStrToID[str].GetHashVal();
         }
 
         LOG_ERROR(std::format("[{}] Unknown input {}, plz check!", __FUNCTION__, str));

@@ -73,7 +73,7 @@ namespace ZeroEngine
     public:
         Event(EventType eventType, uint8_t eventCategory, EventPriority eventPriority = EventPriority::Medium)
             : mMetadata(eventType, eventCategory, eventPriority),
-              mCurFrameTime(WindowManager::GetInstance()->GetCurFrameTime())
+              mCurFrameTime(WindowManager::GetInstance().GetCurFrameTime())
         {
             nlohmann::json tmpJson = eventType;
             mEventTypeStr = tmpJson.dump();

@@ -11,16 +11,19 @@ namespace ZeroEngine
     public:
         static void Create();
         static void Destroy();
-        static std::shared_ptr<EventManager> GetInstance();
+        static EventManager& GetInstance();
 
         EventManager() = default;
         virtual ~EventManager() = default;
+        EventManager(const EventManager&) = delete;
+        EventManager(EventManager&&) = delete;
+        EventManager& operator=(const EventManager&) = delete;
+        EventManager& operator=(EventManager&&) = delete;
 
         uint32_t GetEventTypeHash(EventType eventTy);
         uint32_t GetEventPriorityHash(EventPriority priority);
 
     private:
-        static std::shared_ptr<EventManager> sInstance;
         entt::dispatcher mEventDispatcher;
         std::unordered_map<std::string, Identifier> mStrToID;
 

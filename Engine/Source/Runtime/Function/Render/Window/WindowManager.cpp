@@ -4,21 +4,22 @@
 #endif
 namespace ZeroEngine
 {
-    std::shared_ptr<WindowManager> WindowManager::Instance;
-
-    std::shared_ptr<WindowManager> WindowManager::GetInstance()
+    WindowManager& WindowManager::GetInstance()
     {
-        return Instance;
+#if defined(ZERO_PLATFORM_DESKTOP)
+        static GlfwWindowManager sInstance;
+#else
+        ZERO_CORE_ASSERT(flase, "Other platform TODO");
+#endif
+        return sInstance;
     }
 
     void WindowManager::Create()
     {
-#if defined(ZERO_PLATFORM_DESKTOP)
-        Instance = std::make_shared<GlfwWindowManager>();
-#endif
+        GetInstance();
     }
 
-    void *WindowManager::GetCurrentContext()
+    void* WindowManager::GetCurrentContext()
     {
         return GetWindowPtr();
     }

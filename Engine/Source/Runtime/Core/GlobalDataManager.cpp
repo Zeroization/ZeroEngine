@@ -1,32 +1,29 @@
 ﻿#include "GlobalDataManager.h"
 
 #include "FileSystem/FileSystem.h"
+#include "Serialize/SerializeManager.h"
 
 namespace ZeroEngine
 {
-    std::shared_ptr<GlobalDataManager> GlobalDataManager::sInstance = nullptr;
-
     bool GlobalDataManager::Create(const std::filesystem::path& engineWorkDir)
     {
         FileSystem::SetWorkingDir(engineWorkDir);
-
-        sInstance = std::make_shared<GlobalDataManager>();
-        return sInstance->InitGlobalData();
+        return GetInstance().InitGlobalData();
     }
 
     void GlobalDataManager::Destroy()
     {
-        if (!sInstance->SaveGlobalData())
+        if (!GetInstance().SaveGlobalData())
         {
             LOG_ERROR(std::format("[{}] Errors occurred when saving datas!!!", __FUNCTION__));
         }
 
-        sInstance->mpGlobalData.reset();
-        sInstance.reset();
+        GetInstance().mpGlobalData.reset();
     }
 
-    std::shared_ptr<GlobalDataManager> GlobalDataManager::GetInstance()
+    GlobalDataManager& GlobalDataManager::GetInstance()
     {
+        static GlobalDataManager sInstance;
         return sInstance;
     }
 
@@ -38,6 +35,7 @@ namespace ZeroEngine
     bool GlobalDataManager::InitGlobalData()
     {
         bool initResult = true;
+
         mpGlobalData = std::make_unique<GlobalData>();
         mpGlobalData->engineCfg = EngineConfig::TryGetEngineCfg(FileSystem::GetWorkingDir() / "Source/Editor/Configs");
 
@@ -47,7 +45,7 @@ namespace ZeroEngine
     bool GlobalDataManager::SaveGlobalData() const
     {
         bool saveResult = true;
-        saveResult &= EngineConfig::TrySaveEngineCfg(sInstance->mpGlobalData->engineCfg);
+        saveResult &= EngineConfig::TrySaveEngineCfg(GetInstance().mpGlobalData->engineCfg);
 
         return saveResult;
     }

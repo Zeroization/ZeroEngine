@@ -1,32 +1,32 @@
 #include "RenderEngine.h"
+
+#include "FrameBuffer/FBOManager.h"
 #include "Function/Render/Window/WindowManager.h"
 #include "Function/Render/RHI/RHI.h"
 
 namespace ZeroEngine
 {
-    std::shared_ptr<RenderEngine> RenderEngine::Instance = nullptr;
-
     void RenderEngine::Create()
     {
-        Instance = std::make_shared<RenderEngine>();
-
         WindowManager::Create();
         RHI::Create();
+        FBOManager::Create();
     }
 
     void RenderEngine::Destroy()
     {
-        Instance.reset();
+        FBOManager::Destroy();
     }
 
-    std::shared_ptr<RenderEngine> RenderEngine::GetInstance()
+    RenderEngine& RenderEngine::GetInstance()
     {
-        return Instance;
+        static RenderEngine sInstance;
+        return sInstance;
     }
 
     void RenderEngine::BeginRender()
     {
-        RHI::GetInstance()->BeginFrame();
+        RHI::GetInstance().BeginFrame();
     }
 
     void RenderEngine::Render()
@@ -35,16 +35,16 @@ namespace ZeroEngine
 
     void RenderEngine::EndRender()
     {
-        RHI::GetInstance()->EndFrame();
+        RHI::GetInstance().EndFrame();
     }
 
     void RenderEngine::CloseWindow()
     {
-        WindowManager::GetInstance()->CloseWindow();
+        WindowManager::GetInstance().CloseWindow();
     }
 
     bool RenderEngine::WindowShouldClose()
     {
-        return WindowManager::GetInstance()->WindowShouldClose();
+        return WindowManager::GetInstance().WindowShouldClose();
     }
 } // ZeroEngine

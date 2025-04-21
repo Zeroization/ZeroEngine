@@ -11,13 +11,14 @@ namespace ZeroEngine
     public:
         static void Create();
         static void Destroy();
-        static std::shared_ptr<SerializeManager> GetInstance();
+        static SerializeManager& GetInstance();
 
         SerializeManager() = default;
         virtual ~SerializeManager() = default;
-
-    private:
-        static std::shared_ptr<SerializeManager> sInstance;
+        SerializeManager(const SerializeManager&) = delete;
+        SerializeManager(SerializeManager&&) = delete;
+        SerializeManager& operator=(const SerializeManager&) = delete;
+        SerializeManager& operator=(SerializeManager&&) = delete;
 
         // 模板部分=============================================
     public:

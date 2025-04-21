@@ -20,31 +20,31 @@ if (!isActiveFor##name && ImGui::IsKeyChordPressed(chordFor##name)) \
 
 namespace ZeroEngine
 {
-	std::shared_ptr<EditorGUIManager> EditorGUIManager::Instance = nullptr;
-
 	void EditorGUIManager::Create()
 	{
-#ifdef ZERO_GRAPHIC_OPENGL
-		Instance = std::make_shared<EditorGUIManager_OpenGLImpl>();
-#endif
-
+		GetInstance();
 		EditorGUIPanelManager::Create();
 	}
 
 	void EditorGUIManager::Destroy()
 	{
 		EditorGUIPanelManager::Destroy();
-		Instance.reset();
 	}
 
-	std::shared_ptr<EditorGUIManager> EditorGUIManager::GetInstance()
+	EditorGUIManager& EditorGUIManager::GetInstance()
 	{
-		return Instance;
+#ifdef ZERO_GRAPHIC_OPENGL
+		static EditorGUIManager_OpenGLImpl sInstance;
+#elif
+		ZERO_CORE_ASSERT(false, "Other API TODO...");
+#endif
+		return sInstance;
 	}
 
 	EditorGUIManager::EditorGUIManager()
 	{
-		ZERO_CORE_ASSERT(WindowManager::GetInstance(), "WindowPtr is nullptr, can't init ImGUI!")
+		ZERO_CORE_ASSERT(WindowManager::GetInstance().GetWindowPtr() != nullptr,
+		                 "WindowPtr is nullptr, can't init ImGUI!")
 
 		// 初始化ImGUI ====================================
 		IMGUI_CHECKVERSION();
@@ -165,7 +165,7 @@ namespace ZeroEngine
 	{
 		// TODO: 渲染各种控件和面板
 		MainDockingWidget();
-		EditorGUIPanelManager::GetInstance()->EditorPanelRender();
+		EditorGUIPanelManager::GetInstance().EditorPanelRender();
 
 		ImGui::Render();
 	}

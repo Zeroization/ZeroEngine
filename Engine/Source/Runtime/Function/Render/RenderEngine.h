@@ -9,10 +9,14 @@ namespace ZeroEngine
     public:
         static void Create();
         static void Destroy();
-        static std::shared_ptr<RenderEngine> GetInstance();
+        static RenderEngine& GetInstance();
 
         RenderEngine() = default;
         virtual ~RenderEngine() = default;
+        RenderEngine(const RenderEngine&) = delete;
+        RenderEngine(RenderEngine&&) = delete;
+        RenderEngine& operator=(const RenderEngine&) = delete;
+        RenderEngine& operator=(RenderEngine&&) = delete;
 
         void BeginRender();
         void Render();
@@ -20,8 +24,5 @@ namespace ZeroEngine
 
         void CloseWindow();
         bool WindowShouldClose();
-
-    private:
-        static std::shared_ptr<RenderEngine> Instance;
     };
 } // ZeroEngine

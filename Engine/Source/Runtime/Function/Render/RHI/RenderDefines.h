@@ -1,9 +1,11 @@
 ﻿#pragma once
+#include "Core/Math/Math.h"
 
-#include <cstdint>
+#include <atomic>
 
 namespace ZeroEngine
 {
+#pragma region Enums
     enum class FaceCullingOpt : uint8_t
     {
         None,
@@ -71,14 +73,77 @@ namespace ZeroEngine
 
     enum class FrameBufferType : uint8_t
     {
-        GBuffer,
-        ShadowMap
+        // 纹理写入方式
+        Reserve,   ///< 写入时保留源纹理
+        Overwrite, ///< 写入时覆盖源纹理
+
+        // 纹理类型
+        Color,           ///< 普通纹理
+        Normal,          ///< 法线纹理
+        HeightPrecision, ///< 高度图
+        GBuffer,         ///< G-Buffer
+        ShadowMap,       ///< 平行光的阴影贴图
+        ShadowMapCube,   ///< 点光源的阴影贴图
     };
 
     enum class ShaderDataBufferType : uint8_t
     {
         Uniform, // UBO
         Storage, // SSBO
+    };
+
+    // 着色器参数的类型, 供Slang反射使用
+    enum class ShaderPropertyType : uint8_t
+    {
+        Bool,
+        Int,
+        UInt,
+        Float,
+        Vec2,
+        Vec3,
+        Vec4,
+        IVec2,
+        IVec3,
+        IVec4,
+        UVec2,
+        UVec3,
+        UVec4,
+        Mat2x2,
+        Mat2x3,
+        Mat2x4,
+        Mat3x2,
+        Mat3x3,
+        Mat3x4,
+        Mat4x2,
+        Mat4x3,
+        Mat4x4,
+
+        Sampler,
+        Sampler2D,
+        SamplerCube,
+        TextureIndex,
+    };
+
+    /// 着色器所有阶段
+    /// Ref: Slang::SlangStage
+    enum class ShaderStageFlag : uint16_t
+    {
+        Unknown       = 0b0000000000000000,
+        Vertex        = 0b0000000000000001,
+        Hull          = 0b0000000000000010,
+        Domain        = 0b0000000000000100,
+        Geometry      = 0b0000000000001000,
+        Fragment      = 0b0000000000010000,
+        Pixel         = 0b0000000000010000,
+        Compute       = 0b0000000000100000,
+        RayGeneration = 0b0000000001000000,
+        Intersection  = 0b0000000010000000,
+        AnyHit        = 0b0000000100000000,
+        ClosestHit    = 0b0000001000000000,
+        Miss          = 0b0000010000000000,
+        Callable      = 0b0000100000000000,
+        Mesh          = 0b0001000000000000,
+        Amplification = 0b0010000000000000,
     };
 
     enum class RenderPipelineType : uint8_t
@@ -113,14 +178,30 @@ namespace ZeroEngine
 
     enum class LightType : uint8_t
     {
+        None,        // 无
         Directional, // 平行光
         Point,       // 点光源
         Spot,        // 聚光灯
     };
 
+    enum class ShadowType : uint8_t
+    {
+        None,        ///< 无
+        Directional, ///< 平行光阴影
+        Point,       ///< 点光源阴影
+        Spot         ///< 聚光灯阴影 TODO
+    };
+
+    enum class MaterialType : uint8_t
+    {
+        Forward,
+        Deferred,
+        RayTracing ///< TODO
+    };
+
     enum class NormalGeometryType : uint8_t
     {
-        // TODO: 参考ZXEngine和人宅教程
+        // TODO: 有关简单Mesh的生成, 参考ZXEngine和人宅教程
         Box,
         NormalSphere,
         TessellatedSphere,
@@ -130,4 +211,131 @@ namespace ZeroEngine
         Cone,
         Circle
     };
+#pragma endregion
+
+#pragma region Structs
+    // Render
+    struct ClearInfo
+    {
+        glm::vec4 ClearColor = glm::vec4(0.f, 0.f, 0.f, 1.f);
+        uint32_t ClearStencil = 0;
+        float ClearDepth = 1.0f;
+    };
+
+    struct RenderState
+    {
+        bool enableDepthTest = true;
+        bool enableDepthWrite = true;
+
+        bool enableFaceCulling = true;
+        FaceCullingOpt faceCullingOption = FaceCullingOpt::Back;
+
+        BlendFactor srcFactor = BlendFactor::SrcAlpha;
+        BlendFactor dstFactor = BlendFactor::OneMinusSrcAlpha;
+
+        ClearInfo clearInfo;
+    };
+
+#ifndef ZERO_MAX_BONE_INFLUENCE
+#   define ZERO_MAX_BONE_INFLUENCE 4
+#endif
+    // Vertex
+    struct MeshVertex
+    {
+        glm::vec3 Position = glm::vec3(0.0f);
+        glm::vec3 Normal = glm::vec3(0.0f);
+        glm::vec2 TexCoords = glm::vec2(0.0f);
+
+        // 影响该顶点的关节们
+        std::array<int, ZERO_MAX_BONE_INFLUENCE> m_BoneIDs;
+        // 关节对应的权重
+        std::array<float, ZERO_MAX_BONE_INFLUENCE> m_BoneWeights;
+    };
+
+    // Texture
+    struct TextureData
+    {
+        int width = 0;
+        int height = 0;
+        int numChannels = 0;
+        uint32_t _PADDING_;
+
+        std::string path;
+        uint8_t* data = nullptr;
+    };
+
+    struct CubeMapData
+    {
+        int width = 0;
+        int height = 0;
+        int numChannels = 0;
+        uint32_t _PADDING_;
+
+        std::string path;
+        uint8_t* data[6] = {nullptr};
+    };
+
+    // Shader
+    struct ShaderStateSet
+    {
+        BlendOpt blendOpt = BlendOpt::Add;
+        BlendFactor srcFactor = BlendFactor::SrcAlpha;
+        BlendFactor dstFactor = BlendFactor::OneMinusSrcAlpha;
+        FaceCullingOpt faceCullOpt = FaceCullingOpt::Back;
+        CompareOpt depthCompareOpt = CompareOpt::Less;
+        RenderQueueType renderQueueType = RenderQueueType::Opaque;
+
+        bool enableDepthWrite = true;
+    };
+
+    // 着色器参数信息 (TODO: 通过Slang反射得到)
+    struct ShaderProperty
+    {
+        std::string varName = ""; ///< 变量名
+        uint32_t size = 0;        ///< 该参数的大小(如果是数组则为整个数组大小)
+        uint32_t alignment = 0;   ///< 该参数对齐量
+        uint32_t offset = 0;      ///< 参数偏移量
+        uint32_t space = 0;       ///< 参数绑定空间(VK: UniformBuffer和纹理的LayoutBinding; DX12: 纹理register(t))
+
+        uint32_t arrayLength = 0; ///< 属性数组长度(如果是数组的话)
+        uint32_t arrayOffset = 0; ///< 单个元素的偏移量(如果是数组的话)
+
+        ShaderPropertyType type = ShaderPropertyType::Float;
+    };
+
+    // 某阶段着色器中所有的参数信息
+    struct ShaderPropertiesInfo
+    {
+        std::vector<ShaderProperty> paramProps;
+        std::vector<ShaderProperty> textureProps;
+    };
+
+    using ShaderSemanticType = std::pair<ShaderPropertyType, std::string>;
+
+    struct ShaderInstanceInfo
+    {
+        uint32_t size = 0;
+        std::vector<ShaderSemanticType> attributes;
+    };
+
+    struct ShaderInfo
+    {
+        LightType lightType = LightType::None;
+        ShadowType shadowType = ShadowType::None;
+        ShaderStageFlag stages = ShaderStageFlag::Unknown;
+        ShaderStateSet stateSet;
+        ShaderInstanceInfo instanceInfo;
+        std::unordered_map<ShaderStageFlag, ShaderPropertiesInfo> props;
+    };
+
+    struct ShaderReference
+    {
+        uint32_t id = 0;
+        FrameBufferType targetFrameBufferTy = FrameBufferType::Color;
+
+        std::string path;
+        ShaderInfo info;
+    };
+
+#pragma endregion
 }

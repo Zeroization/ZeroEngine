@@ -7,23 +7,23 @@
 
 namespace ZeroEngine
 {
-    std::shared_ptr<InputManager> InputManager::Instance = nullptr;
-
-    std::shared_ptr<InputManager> InputManager::GetInstance()
+    InputManager& InputManager::GetInstance()
     {
-        return Instance;
+#if defined(ZERO_PLATFORM_DESKTOP)
+        static GlfwInputManager sInstance;
+#else
+        ZERO_CORE_ASSERT(false, "Other platform input TODO");
+#endif
+        return sInstance;
     }
 
     void InputManager::Create()
     {
-#if defined(ZERO_PLATFORM_DESKTOP)
-        Instance = std::make_shared<GlfwInputManager>();
-#endif
+        GetInstance();
     }
 
     void InputManager::Destroy()
     {
-        Instance.reset();
     }
 
     void InputManager::TransitionPressed()
@@ -87,7 +87,7 @@ namespace ZeroEngine
 
     bool InputManager::IsKeyDown(Key key)
     {
-        return WindowManager::GetInstance()->CheckKeyDown(key);
+        return WindowManager::GetInstance().CheckKeyDown(key);
     }
 
     bool InputManager::isKeyReleased(Key key)
@@ -118,7 +118,7 @@ namespace ZeroEngine
 
     bool InputManager::isMouseButtonDown(MouseButton mb)
     {
-        return WindowManager::GetInstance()->CheckMouseDown(mb);
+        return WindowManager::GetInstance().CheckMouseDown(mb);
     }
 
     bool InputManager::isMouseButtonReleased(MouseButton mb)

@@ -9,15 +9,18 @@ namespace ZeroEngine
     public:
         static void Create();
         static void Destroy();
-        static std::shared_ptr<EditorGUIPanelManager> GetInstance();
+        static EditorGUIPanelManager& GetInstance();
 
         EditorGUIPanelManager() = default;
         ~EditorGUIPanelManager() = default;
+        EditorGUIPanelManager(const EditorGUIPanelManager&) = delete;
+        EditorGUIPanelManager(EditorGUIPanelManager&&) = delete;
+        EditorGUIPanelManager& operator=(const EditorGUIPanelManager&) = delete;
+        EditorGUIPanelManager& operator=(EditorGUIPanelManager&&) = delete;
 
         void EditorPanelRender();
 
     private:
-        static std::shared_ptr<EditorGUIPanelManager> sInstance;
         std::vector<std::unique_ptr<EditorGUIBasePanel>> mPanels;
     };
 } // ZeroEngine

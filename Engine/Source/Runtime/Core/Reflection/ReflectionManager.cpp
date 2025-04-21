@@ -3,12 +3,8 @@
 
 namespace ZeroEngine::Reflection
 {
-    std::shared_ptr<ReflectionManager> ReflectionManager::sInstance = nullptr;
-
     void ReflectionManager::Create()
     {
-        sInstance = std::make_shared<ReflectionManager>();
-
         // 注册类型反射
         TypeMetaRegister::DoMetaRegister();
     }
@@ -17,12 +13,11 @@ namespace ZeroEngine::Reflection
     {
         // 注销所有类型
         entt::meta_reset();
-
-        sInstance.reset();
     }
 
-    std::shared_ptr<ReflectionManager> ReflectionManager::GetInstance()
+    ReflectionManager& ReflectionManager::GetInstance()
     {
+        static ReflectionManager sInstance;
         return sInstance;
     }
 

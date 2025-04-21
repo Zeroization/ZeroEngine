@@ -10,6 +10,6 @@ namespace ZeroEngine
         ClearReleased();
 
         // 更新这一帧
-        WindowManager::GetInstance()->Update();
+        WindowManager::GetInstance().Update();
     }
 } // ZeroEngine

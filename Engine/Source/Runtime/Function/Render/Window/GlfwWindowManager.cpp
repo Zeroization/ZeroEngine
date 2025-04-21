@@ -28,8 +28,8 @@ namespace ZeroEngine
 #   endif
 #endif
 
-        auto globalDataMgr = GlobalDataManager::GetInstance();
-        auto engineCfg = globalDataMgr->GetGlobalDataRef()->engineCfg;
+        auto& globalDataMgr = GlobalDataManager::GetInstance();
+        auto engineCfg = globalDataMgr.GetGlobalDataRef()->engineCfg;
         WindowPtr = glfwCreateWindow(engineCfg.mWindowWidth,
                                      engineCfg.mWindowHeight,
                                      windowName.c_str(), nullptr, nullptr);
@@ -66,8 +66,8 @@ namespace ZeroEngine
             windowResizeEvent.mArgs["width"] = width;
             windowResizeEvent.mArgs["height"] = height;
 
-            auto eventMgr = EventManager::GetInstance();
-            eventMgr->TriggerEvent(std::move(windowResizeEvent));
+            auto& eventMgr = EventManager::GetInstance();
+            eventMgr.TriggerEvent(std::move(windowResizeEvent));
         });
 
         // 绑定键盘按键回调
@@ -77,17 +77,17 @@ namespace ZeroEngine
             {
                 case GLFW_PRESS:
                 {
-                    InputManager::GetInstance()->UpdateKeyState(static_cast<KeyCode>(key), KeyState::Pressed);
+                    InputManager::GetInstance().UpdateKeyState(static_cast<KeyCode>(key), KeyState::Pressed);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    InputManager::GetInstance()->UpdateKeyState(static_cast<KeyCode>(key), KeyState::Released);
+                    InputManager::GetInstance().UpdateKeyState(static_cast<KeyCode>(key), KeyState::Released);
                     break;
                 }
                 case GLFW_REPEAT:
                 {
-                    InputManager::GetInstance()->UpdateKeyState(static_cast<KeyCode>(key), KeyState::Held);
+                    InputManager::GetInstance().UpdateKeyState(static_cast<KeyCode>(key), KeyState::Held);
                     break;
                 }
                 default:
@@ -114,14 +114,14 @@ namespace ZeroEngine
             {
                 case GLFW_PRESS:
                 {
-                    InputManager::GetInstance()->UpdateMouseButtonState(static_cast<MouseButton>(button),
-                                                                        KeyState::Pressed);
+                    InputManager::GetInstance().UpdateMouseButtonState(static_cast<MouseButton>(button),
+                                                                       KeyState::Pressed);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    InputManager::GetInstance()->UpdateMouseButtonState(static_cast<MouseButton>(button),
-                                                                        KeyState::Released);
+                    InputManager::GetInstance().UpdateMouseButtonState(static_cast<MouseButton>(button),
+                                                                       KeyState::Released);
                     break;
                 }
                 default:

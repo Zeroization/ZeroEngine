@@ -21,12 +21,16 @@ namespace ZeroEngine
     class InputManager
     {
     public:
-        static std::shared_ptr<InputManager> GetInstance();
+        static InputManager& GetInstance();
         static void Create();
         static void Destroy();
 
         InputManager() = default;
         virtual ~InputManager() = default;
+        InputManager(const InputManager&) = delete;
+        InputManager(InputManager&&) = delete;
+        InputManager& operator=(const InputManager&) = delete;
+        InputManager& operator=(InputManager&&) = delete;
 
         virtual void Update() = 0;
 
@@ -53,6 +57,5 @@ namespace ZeroEngine
     private:
         inline static std::map<KeyCode, KeyData> sKeyData;
         inline static std::map<MouseButton, MouseBtnData> sMouseData;
-        static std::shared_ptr<InputManager> Instance;
     };
 }
