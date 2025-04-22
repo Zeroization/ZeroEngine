@@ -9,6 +9,7 @@
 #include "Widgets/EditorGUIWidgets.hpp"
 #include "Core/FileSystem/FileSystem.h"
 #include "imgui_internal.h"
+#include "Core/GlobalDataManager.h"
 
 #define CHECK_GUI_SHORTCUT(name, shortcut, doAction) \
 ZERO_EXPLICIT_STATIC ImGuiKeyChord chordFor##name = shortcut; \
@@ -58,7 +59,7 @@ namespace ZeroEngine
 		io.ConfigWindowsMoveFromTitleBarOnly = true;
 		io.ConfigWindowsResizeFromEdges = true;
 		// 设置字体
-		const std::string assetDir = (FileSystem::GetWorkingDir() / "BuiltinAssets").string();
+		const std::string assetDir = GlobalDataManager::GetInstance().GetGlobalDataRef()->BuiltinAssetsDir.string();
 		io.Fonts->AddFontFromFileTTF((assetDir + "/Fonts/OPPOSansM.ttf").c_str(), 18.0f, nullptr,
 		                             io.Fonts->GetGlyphRangesChineseFull());
 		// 设置主题

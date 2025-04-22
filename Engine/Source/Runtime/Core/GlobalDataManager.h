@@ -9,12 +9,15 @@ namespace ZeroEngine
     {
         // 各种配置
         EngineConfig engineCfg; ///< 引擎配置
+
         // 运行时全局变量
         float EngineDeltaTime = 0.0; ///< 引擎帧间DeltaTime
         float LastFrameTime = 0.0;   ///< 上一帧的时间
         float CurFrameTime = 0.0;    ///< 当前帧的时间
         uint32_t ScreenWidth;        ///< 当前屏幕宽度
         uint32_t ScreenHeight;       ///< 当前屏幕高度
+        float __padding_be_placed__;
+        std::filesystem::path BuiltinAssetsDir; ///< BuiltinAssets文件夹路径
     };
 
     class GlobalDataManager

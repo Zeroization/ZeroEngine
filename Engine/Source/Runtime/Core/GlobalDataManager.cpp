@@ -38,7 +38,7 @@ namespace ZeroEngine
 
         mpGlobalData = std::make_unique<GlobalData>();
         mpGlobalData->engineCfg = EngineConfig::TryGetEngineCfg(FileSystem::GetWorkingDir() / "Source/Editor/Configs");
-
+        mpGlobalData->BuiltinAssetsDir = FileSystem::GetWorkingDir() / "BuiltinAssets";
         return initResult;
     }
 
