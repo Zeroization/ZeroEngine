@@ -24,6 +24,7 @@ target_link_libraries(${TARGET_NAME}
         PUBLIC glfw
         PUBLIC glm
         PUBLIC ImGUI
+        PUBLIC stb_image
 )
 
 target_compile_definitions(${TARGET_NAME}
