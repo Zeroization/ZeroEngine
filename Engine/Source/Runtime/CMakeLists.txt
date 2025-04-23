@@ -14,6 +14,7 @@ set(ZEROENGINE_RUNTIME_HEADS "${HEADER_FILES}" PARENT_SCOPE)
 target_precompile_headers(${TARGET_NAME} PUBLIC pch.h)
 target_include_directories(${TARGET_NAME}
         PUBLIC .
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../ThirdParty/slang/include
 )
 target_link_libraries(${TARGET_NAME}
         PUBLIC spdlog::spdlog_header_only
@@ -25,6 +26,7 @@ target_link_libraries(${TARGET_NAME}
         PUBLIC glm
         PUBLIC ImGUI
         PUBLIC stb_image
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../ThirdParty/slang/lib/slang.lib
 )
 
 target_compile_definitions(${TARGET_NAME}
