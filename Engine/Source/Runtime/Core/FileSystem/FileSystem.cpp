@@ -476,4 +476,38 @@ namespace ZeroEngine
 
         return PersistentStoragePath;
     }
+
+    std::string FileSystem::WStringToUTF8(const std::wstring& wstr)
+    {
+        if (wstr.empty())
+        {
+            return {};
+        }
+#ifdef ZERO_OS_WINDOWS
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), nullptr, 0,
+                                              nullptr, nullptr);
+        std::string result(size_needed, 0);
+        WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), &result[0], size_needed, nullptr,
+                            nullptr);
+        return result;
+#endif
+        ZERO_CORE_ASSERT(false, "Only used for Windows");
+        return {};
+    }
+
+    std::wstring FileSystem::UTF8ToWString(const std::string& str)
+    {
+        if (str.empty())
+        {
+            return {};
+        }
+#ifdef ZERO_OS_WINDOWS
+        int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), nullptr, 0);
+        std::wstring result(size_needed, 0);
+        MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), &result[0], size_needed);
+        return result;
+#endif
+        ZERO_CORE_ASSERT(false, "Only used for Windows");
+        return {};
+    }
 } // ZeroEngine

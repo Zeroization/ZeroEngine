@@ -87,6 +87,10 @@ namespace ZeroEngine
         /// 获取持久性存储路径(Win: AppData/Roaming)
         static std::filesystem::path GetPersistentStoragePath();
 
+        /// Windows专用, std::wstring <-> std::string (UTF-8)
+        static std::string WStringToUTF8(const std::wstring& wstr);
+        static std::wstring UTF8ToWString(const std::string& str);
+
     private:
         static std::filesystem::path PersistentStoragePath;
     };
