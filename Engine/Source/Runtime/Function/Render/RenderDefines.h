@@ -1,11 +1,26 @@
 ﻿#pragma once
-#include "Core/Math/Math.h"
+#include "../../Core/Math/Math.h"
 
 #include <atomic>
 
 namespace ZeroEngine
 {
 #pragma region Enums
+    enum class GraphAPI : uint8_t
+    {
+        OpenGL,
+        Vulkan, ///< todo...
+        DX12    ///< todo...
+    };
+
+    enum class GPUBufferType : uint8_t
+    {
+        StaticGPURead,
+        DynamicGPURead,
+        DynamicGPUWrite,
+        DynamicGPUReadWrite
+    };
+
     enum class FaceCullingOpt : uint8_t
     {
         None,
@@ -62,14 +77,23 @@ namespace ZeroEngine
         Stencil = 0b00000100,
     };
 
-    enum class FrameBufferAttachmentFlag : uint8_t
+    ZERO_FORCE_INLINE bool operator&(FrameBufferClearFlag lhs, FrameBufferClearFlag rhs)
     {
-        None     = 0b00000000,
+        return static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs);
+    }
+
+    enum class FrameBufferPieceFlag : uint8_t
+    {
         Color    = 0b00000001,
         Depth    = 0b00000010,
         Position = 0b00000100,
         Normal   = 0b00001000,
     };
+
+    ZERO_FORCE_INLINE bool operator&(FrameBufferPieceFlag lhs, FrameBufferPieceFlag rhs)
+    {
+        return static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs);
+    }
 
     enum class FrameBufferType : uint8_t
     {
@@ -78,12 +102,26 @@ namespace ZeroEngine
         Overwrite, ///< 写入时覆盖源纹理
 
         // 纹理类型
-        Color,           ///< 普通纹理
-        Normal,          ///< 法线纹理
-        HeightPrecision, ///< 高度图
-        GBuffer,         ///< G-Buffer
-        ShadowMap,       ///< 平行光的阴影贴图
-        ShadowMapCube,   ///< 点光源的阴影贴图
+        Normal,        ///< Color附件 + Depth附件
+        Color,         ///< 只有Color附件
+        HighPrecision, ///< 高精度(Color + Depth)
+        GBuffer,       ///< G-Buffer
+        ShadowMap,     ///< 平行光的阴影贴图
+        ShadowMapCube, ///< 点光源的阴影贴图
+    };
+
+    enum class InstanceBufferLayoutType : uint8_t
+    {
+        Float,
+
+        Uint32_t,
+        UnsignedInt,
+
+        Uint8_t,
+        UnsignedChar,
+
+        Int32_t,
+        Int,
     };
 
     enum class ShaderDataBufferType : uint8_t
@@ -99,15 +137,15 @@ namespace ZeroEngine
         Int,
         UInt,
         Float,
-        Vec2,
-        Vec3,
-        Vec4,
-        IVec2,
-        IVec3,
-        IVec4,
-        UVec2,
-        UVec3,
-        UVec4,
+        Vec2,  ///< float vec2
+        Vec3,  ///< float vec3
+        Vec4,  ///< float vec4
+        IVec2, ///< integer vec2
+        IVec3, ///< integer vec3
+        IVec4, ///< integer vec4
+        UVec2, ///< unsigned integer vec2
+        UVec3, ///< unsigned integer vec3
+        UVec4, ///< unsigned integer vec4
         Mat2x2,
         Mat2x3,
         Mat2x4,
@@ -130,8 +168,8 @@ namespace ZeroEngine
     {
         Unknown       = 0b0000000000000000,
         Vertex        = 0b0000000000000001,
-        Hull          = 0b0000000000000010,
-        Domain        = 0b0000000000000100,
+        Hull          = 0b0000000000000010, ///< 经典曲面细分 Hull -> 硬件 -> Domain
+        Domain        = 0b0000000000000100, ///< 经典曲面细分 Hull -> 硬件 -> Domain
         Geometry      = 0b0000000000001000,
         Fragment      = 0b0000000000010000,
         Pixel         = 0b0000000000010000,
@@ -142,7 +180,7 @@ namespace ZeroEngine
         ClosestHit    = 0b0000001000000000,
         Miss          = 0b0000010000000000,
         Callable      = 0b0000100000000000,
-        Mesh          = 0b0001000000000000,
+        Mesh          = 0b0001000000000000, ///< 现代曲面细分着色器  Mesh
         Amplification = 0b0010000000000000,
     };
 
@@ -245,11 +283,12 @@ namespace ZeroEngine
         glm::vec3 Position = glm::vec3(0.0f);
         glm::vec3 Normal = glm::vec3(0.0f);
         glm::vec2 TexCoords = glm::vec2(0.0f);
+        glm::vec3 Tangent = glm::vec3(0.0f);
 
         // 影响该顶点的关节们
-        std::array<int, ZERO_MAX_BONE_INFLUENCE> m_BoneIDs;
+        std::array<int, ZERO_MAX_BONE_INFLUENCE> BoneIDs;
         // 关节对应的权重
-        std::array<float, ZERO_MAX_BONE_INFLUENCE> m_BoneWeights;
+        std::array<float, ZERO_MAX_BONE_INFLUENCE> BoneWeights;
     };
 
     // Texture
@@ -260,7 +299,7 @@ namespace ZeroEngine
         int numChannels = 0;
         uint32_t _PADDING_;
 
-        std::string path;
+        std::wstring path;
         uint8_t* data = nullptr;
     };
 
@@ -271,7 +310,7 @@ namespace ZeroEngine
         int numChannels = 0;
         uint32_t _PADDING_;
 
-        std::string path;
+        std::wstring path;
         uint8_t* data[6] = {nullptr};
     };
 
@@ -328,6 +367,13 @@ namespace ZeroEngine
         std::unordered_map<ShaderStageFlag, ShaderPropertiesInfo> props;
     };
 
+    struct ShaderDataBufferInfo
+    {
+        uint32_t binding = 0;
+        bool isReadOnly = true;
+        ShaderDataBufferType type = ShaderDataBufferType::Uniform;
+    };
+
     struct ShaderReference
     {
         uint32_t id = 0;
@@ -335,6 +381,18 @@ namespace ZeroEngine
 
         std::string path;
         ShaderInfo info;
+    };
+
+    struct ComputeShaderInfo
+    {
+        std::vector<ShaderDataBufferInfo> bufferInfos;
+    };
+
+    struct ComputeShaderReference
+    {
+        std::string path;
+        uint32_t id = 0;
+        ComputeShaderInfo shaderInfo;
     };
 
 #pragma endregion

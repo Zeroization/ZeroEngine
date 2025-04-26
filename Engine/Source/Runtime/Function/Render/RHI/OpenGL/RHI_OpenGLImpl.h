@@ -18,20 +18,25 @@ namespace ZeroEngine
         void OnEvent(Event& e) override;
 
         void SetRenderState(const RenderState& state) override;
-        void SetViewPort(uint32_t width, uint32_t height) override;
+        void SetViewPort(uint32_t width, uint32_t height, uint32_t xOffset, uint32_t yOffset) override;
 
         void SwitchFrameBuffer(uint32_t id) override;
         void ClearFrameBuffer(FrameBufferClearFlag flags) override;
+        void BlitFrameBuffer(uint32_t cmd, const std::string& srcName, const std::string& dstName,
+                             FrameBufferPieceFlag flags) override;
         std::shared_ptr<FrameBufferObject> CreateFBO(FrameBufferType type, uint32_t width, uint32_t height) override;
         std::shared_ptr<FrameBufferObject> CreateFBO(FrameBufferType type, uint32_t width, uint32_t height,
                                                      const ClearInfo& clearInfo) override;
         void DeleteFBO(const std::shared_ptr<FrameBufferObject>& pFBO) override;
-        uint32_t GetAttachmentTexture(uint32_t id) override;
+        uint32_t GetRenderBufferTexture(uint32_t id) override;
 
         uint32_t CreateStaticInstanceBuffer(uint32_t size, const void* data) override;
         uint32_t CreateDynamicInstanceBuffer(uint32_t size) override;
         void UpdateDynamicInstanceBuffer(uint32_t id, uint32_t size, const void* data) override;
-        void SetInstanceBufferAttributesByVAO(uint32_t VAO, uint32_t id, uint32_t size, uint32_t offset) override;
+        void SetInstanceBufferAttributesByVAO(uint32_t VAO, uint32_t instanceBufferID,
+                                              const std::initializer_list<std::pair<InstanceBufferLayoutType, uint32_t>>
+                                              &
+                                              RHITypeAndElemCntList) override;
         void DeleteInstanceBuffer(uint32_t id) override;
 
         uint32_t AllocateDrawCommand(RenderCommandType cmdType, FrameBufferClearFlag clearFlags) override;
@@ -40,16 +45,16 @@ namespace ZeroEngine
         void Draw(uint32_t VAO) override;
         void DrawInstanced(uint32_t VAO, uint32_t instanceCnt, uint32_t instanceBuffer) override;
 
-        unsigned LoadTexture(const std::string& path, int& width, int& height, bool needFlip) override;
-        unsigned CreateTexture(const std::shared_ptr<TextureData>& pData) override;
-        unsigned LoadCubeMap(const std::string& path) override;
-        unsigned CreateCubeMap(const std::shared_ptr<CubeMapData>& pData) override;
-        void DeleteTexture(unsigned id) override;
+        uint32_t LoadTexture(const std::u8string& path, int& width, int& height, bool needFlip) override;
+        uint32_t CreateTexture(const std::shared_ptr<TextureData>& pData) override;
+        uint32_t LoadCubeMap(const std::vector<std::u8string>& facePaths) override;
+        uint32_t CreateCubeMap(const std::shared_ptr<CubeMapData>& pData) override;
+        void DeleteTexture(uint32_t id) override;
 
-        UUID32 CreateMaterialData() override;
+        uint32_t CreateMaterialData() override;
         void SetupMaterial(const std::shared_ptr<Material>& material) override;
-        void UseMaterialData(UUID32 ID) override;
-        void DeleteMaterialData(UUID32 ID) override;
+        void UseMaterialData(uint32_t ID) override;
+        void DeleteMaterialData(uint32_t ID) override;
 
         void DeleteMesh(unsigned VAO) override;
         void SetupStaticMesh(unsigned& VAO, const std::vector<MeshVertex>& vertices,
@@ -76,6 +81,18 @@ namespace ZeroEngine
                            const glm::vec3& value) override;
         void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
                            const glm::vec4& value) override;
+        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+                           const glm::ivec2& value) override;
+        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+                           const glm::ivec3& value) override;
+        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+                           const glm::ivec4& value) override;
+        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+                           const glm::uvec2& value) override;
+        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+                           const glm::uvec3& value) override;
+        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+                           const glm::uvec4& value) override;
         void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
                            const glm::mat2& value) override;
         void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
@@ -95,13 +112,38 @@ namespace ZeroEngine
         void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
                            const glm::mat4x3& value) override;
         void SetTextureProp(const std::shared_ptr<Material>& material, const std::string& propName, uint32_t texID,
+                            uint32_t texIdx,
                             bool isBuffer) override;
         void SetCubemapProp(const std::shared_ptr<Material>& material, const std::string& propName, uint32_t texID,
+                            uint32_t texIdx,
                             bool isBuffer) override;
+
+        uint32_t CreateSSBO(const void* data, size_t size, GPUBufferType type) override;
+        void BindSSBO(uint32_t id, uint32_t binding) override;
+        void UpdateSSBO(uint32_t id, const void* data, size_t size) override;
+        void DeleteSSBO(uint32_t id) override;
+        void BindWithVAO(uint32_t VAO, uint32_t binding) override;
+
+        std::shared_ptr<ComputeShaderReference> LoadAndSetupComputeShader(const std::string& path) override;
+        void DeleteComputeShader(uint32_t id) override;
+        void DispatchComputeCommand(uint32_t commandID, uint32_t shaderID, uint32_t groupX, uint32_t groupY,
+                                    uint32_t groupZ) override;
 
     private:
         void DoWindowSizeChange();
-        void CheckCompileError();
+        void UpdateRenderState();
+        void UpdateMaterialData();
+        void ClearColorBuffer(const glm::vec4& color);
+        void ClearDepthBuffer(float depth);
+        void ClearStencilBuffer(uint32_t stencil);
+
+        void DoSetShaderTexture(const std::string& name, uint32_t ID, uint32_t idx);
+        void DOSetShaderCubemap(const std::string& name, uint32_t ID, uint32_t idx);
+
+        uint32_t GetNextVAOIdx();
+        std::shared_ptr<GLVertexArray> GetVAOByIdx(uint32_t idx);
+        uint32_t GetNextMaterialDataIdx();
+        std::shared_ptr<GLMaterialData> GetMaterialDataByIdx(uint32_t idx);
 
     private:
         bool mIsStateDirty = false;
@@ -121,6 +163,59 @@ namespace ZeroEngine
 
         std::unique_ptr<RenderState> mTargetState = nullptr;
         std::unique_ptr<RenderState> mCurRealState = nullptr;
+
+        // 模板部分
+    private:
+        template <typename T>
+        void SetUniform(const std::string& name, const T& value) const
+        {
+            ZERO_CORE_ASSERT(false, std::format("Unknown type for uniform var: {}", name));
+        }
+
+        template <>
+        void SetUniform(const std::string& name, const uint32_t& value) const;
+        template <>
+        void SetUniform(const std::string& name, const int& value) const;
+        template <>
+        void SetUniform(const std::string& name, const bool& value) const;
+        template <>
+        void SetUniform(const std::string& name, const float& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::vec2& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::vec3& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::vec4& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::ivec2& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::ivec3& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::ivec4& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::uvec2& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::uvec3& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::uvec4& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::mat2& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::mat2x3& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::mat2x4& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::mat3& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::mat3x2& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::mat3x4& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::mat4x2& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::mat4x3& value) const;
+        template <>
+        void SetUniform(const std::string& name, const glm::mat4& value) const;
     };
 
     ZERO_FORCE_INLINE void GLAPIENTRY GLDebugCallback(unsigned source, unsigned type, unsigned id, unsigned severity,
