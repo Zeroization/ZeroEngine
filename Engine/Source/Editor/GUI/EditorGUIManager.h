@@ -21,9 +21,11 @@ namespace ZeroEngine
         void Update();
         void CheckGUIShortcuts();
 
-
         void Render();
         void GUIRender();
+
+    public:
+        glm::vec2 mViewBorderSize;
 
     protected:
         virtual void BeforeGUIRender() = 0;

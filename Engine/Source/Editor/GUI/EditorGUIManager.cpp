@@ -10,6 +10,7 @@
 #include "Core/FileSystem/FileSystem.h"
 #include "imgui_internal.h"
 #include "Core/GlobalDataManager.h"
+#include "GUITexture/EditorGUITexManager.h"
 
 #define CHECK_GUI_SHORTCUT(name, shortcut, doAction) \
 ZERO_EXPLICIT_STATIC ImGuiKeyChord chordFor##name = shortcut; \
@@ -24,12 +25,14 @@ namespace ZeroEngine
 	void EditorGUIManager::Create()
 	{
 		GetInstance();
+		EditorGUITexManager::Create();
 		EditorGUIPanelManager::Create();
 	}
 
 	void EditorGUIManager::Destroy()
 	{
 		EditorGUIPanelManager::Destroy();
+		EditorGUITexManager::Destroy();
 	}
 
 	EditorGUIManager& EditorGUIManager::GetInstance()

@@ -10,6 +10,7 @@
 
 #include <stbi/stb_image.h>
 
+#include "../../../../../Editor/GUI/GUITexture/EditorGUITexManager.h"
 #include "Core/FileSystem/FileSystem.h"
 #include "Function/Render/Material/Material.h"
 #include "Function/Render/Material/MaterialData.h"
@@ -811,6 +812,9 @@ namespace ZeroEngine
     void RHI_OpenGLImpl::DeleteTexture(uint32_t id)
     {
         glDeleteTextures(1, &id);
+#ifdef ZERO_EDITOR
+        EditorGUITexManager::GetInstance().DeleteTextureFromEngineID(id);
+#endif
     }
 
     uint32_t RHI_OpenGLImpl::CreateMaterialData()
