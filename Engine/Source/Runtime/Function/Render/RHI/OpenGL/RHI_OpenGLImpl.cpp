@@ -1052,7 +1052,7 @@ namespace ZeroEngine
     std::shared_ptr<ShaderReference> RHI_OpenGLImpl::SetupShader(const std::string& path, const std::string& shaderCode,
                                                                  FrameBufferType type)
     {
-        std::vector<ShaderBlob> blobs;
+        std::vector<Internal_SlangShaderBlob> blobs;
         if (!shaderCode.empty())
         {
             ZERO_CORE_ASSERT(false, "TODO: do slang::loadModuleFromSourceString() in SlangShaderParse::");
@@ -1071,8 +1071,7 @@ namespace ZeroEngine
         std::vector<uint32_t> shaderIDs;
         for (const auto& blob: blobs)
         {
-            ZERO_CORE_ASSERT((blob.buffer == nullptr || blob.entryName || blob.bufferSize <= 0),
-                             "They shouldn't be null");
+            ZERO_CORE_ASSERT((blob.Blob != nullptr), "Shader blob shouldn't be null");
 
             uint32_t shaderID = 0;
             switch (blob.stage)
@@ -1094,21 +1093,20 @@ namespace ZeroEngine
                     return nullptr;
             }
             glShaderBinary(1, &shaderID, GL_SHADER_BINARY_FORMAT_SPIR_V,
-                           blob.buffer,
-                           blob.bufferSize);
-
-            int32_t binaryStatus;
-            glGetShaderiv(shaderID, GL_SHADER_BINARY_FORMATS, &binaryStatus);
-            if (binaryStatus == GL_FALSE)
+                           static_cast<const char *>(blob.Blob->getBufferPointer()),
+                           blob.Blob->getBufferSize());
+            int32_t loaded;
+            glGetShaderiv(shaderID, GL_SPIR_V_BINARY, &loaded);
+            if (loaded != GL_TRUE)
             {
-                LOG_ERROR(
-                    std::format("[{}] Failed to load SPIR-V binary shader, path: {}, stage: {}", __FUNCTION__, path,
-                        static_cast<uint16_t>(blob.stage)));
+                char errorLog[1024];
+                glGetShaderInfoLog(shaderID, 1024, nullptr, errorLog);
+                LOG_ERROR(std::format("[{}] Can't load spir-v shader, path:{}, stage: {}", __FUNCTION__, path,
+                    static_cast<uint16_t>(blob.stage)));
                 glDeleteShader(shaderID);
                 return nullptr;
             }
-
-            glSpecializeShader(shaderID, blob.entryName, 0, nullptr, nullptr);
+            glSpecializeShader(shaderID, "main", 0, nullptr, nullptr);
             int32_t success;
             glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
             if (!success)
@@ -1384,7 +1382,7 @@ namespace ZeroEngine
 
     std::shared_ptr<ComputeShaderReference> RHI_OpenGLImpl::LoadAndSetupComputeShader(const std::string& path)
     {
-        std::vector<ShaderBlob> blobs;
+        std::vector<Internal_SlangShaderBlob> blobs;
         SlangShaderParser::GetInstance().TranslateSlangToShader(path, blobs, true);
 
         if (blobs.empty())
@@ -1405,8 +1403,8 @@ namespace ZeroEngine
         uint32_t computeShaderID = glCreateShader(GL_COMPUTE_SHADER);
 
         glShaderBinary(1, &computeShaderID, GL_SHADER_BINARY_FORMAT_SPIR_V,
-                       blobs.front().buffer,
-                       blobs.front().bufferSize);
+                       blobs.front().Blob->getBufferPointer(),
+                       blobs.front().Blob->getBufferSize());
         int32_t binaryStatus;
         glGetShaderiv(computeShaderID, GL_SHADER_BINARY_FORMATS, &binaryStatus);
         if (binaryStatus == GL_FALSE)
@@ -1416,7 +1414,7 @@ namespace ZeroEngine
             return nullptr;
         }
 
-        glSpecializeShader(computeShaderID, blobs.front().entryName, 0, nullptr, nullptr);
+        glSpecializeShader(computeShaderID, "main", 0, nullptr, nullptr);
         int32_t specializeStatus;
         glGetShaderiv(computeShaderID, GL_COMPILE_STATUS, &specializeStatus);
         if (!specializeStatus)
