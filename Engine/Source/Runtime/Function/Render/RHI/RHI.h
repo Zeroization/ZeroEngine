@@ -68,15 +68,15 @@ namespace ZeroEngine
         virtual void DrawInstanced(uint32_t VAO, uint32_t instanceCnt, uint32_t instanceBuffer) = 0;
 
         /// 纹理 - Texture
-        virtual uint32_t LoadTexture(const std::u8string& path, int& width, int& height, bool needFlip) = 0;
+        virtual uint32_t LoadTexture(const std::string& path, int& width, int& height, bool needFlip) = 0;
         virtual uint32_t CreateTexture(const std::shared_ptr<TextureData>& pData) = 0;
-        virtual uint32_t LoadCubeMap(const std::vector<std::u8string>& facePaths) = 0;
+        virtual uint32_t LoadCubeMap(const std::vector<std::string>& facePaths) = 0;
         virtual uint32_t CreateCubeMap(const std::shared_ptr<CubeMapData>& pData) = 0;
         virtual void DeleteTexture(uint32_t id) = 0;
 
         /// 材质 - Material
         virtual uint32_t CreateMaterialData() = 0;
-        virtual void SetupMaterial(const std::shared_ptr<Material>& material) = 0;
+        virtual void SetupMaterial(Material* material) = 0;
         virtual void UseMaterialData(uint32_t ID) = 0;
         virtual void DeleteMaterialData(uint32_t ID) = 0;
 
@@ -94,53 +94,53 @@ namespace ZeroEngine
                                                              FrameBufferType type) = 0;
         virtual void DeleteShader(uint32_t id) = 0;
         virtual void UseShader(uint32_t id) = 0;
-        virtual void SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetScalarProp(Material* material, const std::string& propName,
                                    bool value) = 0;
-        virtual void SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetScalarProp(Material* material, const std::string& propName,
                                    float value) = 0;
-        virtual void SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetScalarProp(Material* material, const std::string& propName,
                                    int32_t value) = 0;
-        virtual void SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetScalarProp(Material* material, const std::string& propName,
                                    uint32_t value) = 0;
-        virtual void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetVectorProp(Material* material, const std::string& propName,
                                    const glm::vec2& value) = 0;
-        virtual void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetVectorProp(Material* material, const std::string& propName,
                                    const glm::vec3& value) = 0;
-        virtual void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetVectorProp(Material* material, const std::string& propName,
                                    const glm::vec4& value) = 0;
-        virtual void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetVectorProp(Material* material, const std::string& propName,
                                    const glm::ivec2& value) = 0;
-        virtual void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetVectorProp(Material* material, const std::string& propName,
                                    const glm::ivec3& value) = 0;
-        virtual void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetVectorProp(Material* material, const std::string& propName,
                                    const glm::ivec4& value) = 0;
-        virtual void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetVectorProp(Material* material, const std::string& propName,
                                    const glm::uvec2& value) = 0;
-        virtual void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetVectorProp(Material* material, const std::string& propName,
                                    const glm::uvec3& value) = 0;
-        virtual void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetVectorProp(Material* material, const std::string& propName,
                                    const glm::uvec4& value) = 0;
-        virtual void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetMatrixProp(Material* material, const std::string& propName,
                                    const glm::mat2& value) = 0;
-        virtual void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetMatrixProp(Material* material, const std::string& propName,
                                    const glm::mat2x3& value) = 0;
-        virtual void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetMatrixProp(Material* material, const std::string& propName,
                                    const glm::mat2x4& value) = 0;
-        virtual void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetMatrixProp(Material* material, const std::string& propName,
                                    const glm::mat3& value) = 0;
-        virtual void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetMatrixProp(Material* material, const std::string& propName,
                                    const glm::mat3x2& value) = 0;
-        virtual void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetMatrixProp(Material* material, const std::string& propName,
                                    const glm::mat3x4& value) = 0;
-        virtual void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetMatrixProp(Material* material, const std::string& propName,
                                    const glm::mat4& value) = 0;
-        virtual void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetMatrixProp(Material* material, const std::string& propName,
                                    const glm::mat4x2& value) = 0;
-        virtual void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetMatrixProp(Material* material, const std::string& propName,
                                    const glm::mat4x3& value) = 0;
-        virtual void SetTextureProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetTextureProp(Material* material, const std::string& propName,
                                     uint32_t texID, uint32_t texIdx, bool isBuffer) = 0;
-        virtual void SetCubemapProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        virtual void SetCubemapProp(Material* material, const std::string& propName,
                                     uint32_t texID, uint32_t texIdx, bool isBuffer) = 0;
 
         // 和GPU交互的计算相关API

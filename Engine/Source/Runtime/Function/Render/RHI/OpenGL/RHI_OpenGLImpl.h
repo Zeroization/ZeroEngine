@@ -45,14 +45,14 @@ namespace ZeroEngine
         void Draw(uint32_t VAO) override;
         void DrawInstanced(uint32_t VAO, uint32_t instanceCnt, uint32_t instanceBuffer) override;
 
-        uint32_t LoadTexture(const std::u8string& path, int& width, int& height, bool needFlip) override;
+        uint32_t LoadTexture(const std::string& path, int& width, int& height, bool needFlip) override;
         uint32_t CreateTexture(const std::shared_ptr<TextureData>& pData) override;
-        uint32_t LoadCubeMap(const std::vector<std::u8string>& facePaths) override;
+        uint32_t LoadCubeMap(const std::vector<std::string>& facePaths) override;
         uint32_t CreateCubeMap(const std::shared_ptr<CubeMapData>& pData) override;
         void DeleteTexture(uint32_t id) override;
 
         uint32_t CreateMaterialData() override;
-        void SetupMaterial(const std::shared_ptr<Material>& material) override;
+        void SetupMaterial(Material* material) override;
         void UseMaterialData(uint32_t ID) override;
         void DeleteMaterialData(uint32_t ID) override;
 
@@ -68,53 +68,53 @@ namespace ZeroEngine
                                                      FrameBufferType type) override;
         void DeleteShader(uint32_t id) override;
         void UseShader(uint32_t id) override;
-        void SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName, bool value) override;
-        void SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetScalarProp(Material* material, const std::string& propName, bool value) override;
+        void SetScalarProp(Material* material, const std::string& propName,
                            float value) override;
-        void SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetScalarProp(Material* material, const std::string& propName,
                            int32_t value) override;
-        void SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetScalarProp(Material* material, const std::string& propName,
                            uint32_t value) override;
-        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetVectorProp(Material* material, const std::string& propName,
                            const glm::vec2& value) override;
-        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetVectorProp(Material* material, const std::string& propName,
                            const glm::vec3& value) override;
-        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetVectorProp(Material* material, const std::string& propName,
                            const glm::vec4& value) override;
-        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetVectorProp(Material* material, const std::string& propName,
                            const glm::ivec2& value) override;
-        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetVectorProp(Material* material, const std::string& propName,
                            const glm::ivec3& value) override;
-        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetVectorProp(Material* material, const std::string& propName,
                            const glm::ivec4& value) override;
-        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetVectorProp(Material* material, const std::string& propName,
                            const glm::uvec2& value) override;
-        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetVectorProp(Material* material, const std::string& propName,
                            const glm::uvec3& value) override;
-        void SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetVectorProp(Material* material, const std::string& propName,
                            const glm::uvec4& value) override;
-        void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetMatrixProp(Material* material, const std::string& propName,
                            const glm::mat2& value) override;
-        void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetMatrixProp(Material* material, const std::string& propName,
                            const glm::mat2x3& value) override;
-        void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetMatrixProp(Material* material, const std::string& propName,
                            const glm::mat2x4& value) override;
-        void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetMatrixProp(Material* material, const std::string& propName,
                            const glm::mat3& value) override;
-        void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetMatrixProp(Material* material, const std::string& propName,
                            const glm::mat3x2& value) override;
-        void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetMatrixProp(Material* material, const std::string& propName,
                            const glm::mat3x4& value) override;
-        void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetMatrixProp(Material* material, const std::string& propName,
                            const glm::mat4& value) override;
-        void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetMatrixProp(Material* material, const std::string& propName,
                            const glm::mat4x2& value) override;
-        void SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+        void SetMatrixProp(Material* material, const std::string& propName,
                            const glm::mat4x3& value) override;
-        void SetTextureProp(const std::shared_ptr<Material>& material, const std::string& propName, uint32_t texID,
+        void SetTextureProp(Material* material, const std::string& propName, uint32_t texID,
                             uint32_t texIdx,
                             bool isBuffer) override;
-        void SetCubemapProp(const std::shared_ptr<Material>& material, const std::string& propName, uint32_t texID,
+        void SetCubemapProp(Material* material, const std::string& propName, uint32_t texID,
                             uint32_t texIdx,
                             bool isBuffer) override;
 

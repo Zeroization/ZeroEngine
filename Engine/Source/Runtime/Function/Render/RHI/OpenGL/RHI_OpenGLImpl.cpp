@@ -611,12 +611,12 @@ namespace ZeroEngine
         meshBuffer->UnBind();
     }
 
-    uint32_t RHI_OpenGLImpl::LoadTexture(const std::u8string& path, int& width, int& height, bool needFlip)
+    uint32_t RHI_OpenGLImpl::LoadTexture(const std::string& path, int& width, int& height, bool needFlip)
     {
         stbi_set_flip_vertically_on_load(needFlip);
 
         int nrComponents;
-        uint8_t* texBuffer = stbi_load(reinterpret_cast<char const *>(path.c_str()), &width, &height,
+        uint8_t* texBuffer = stbi_load(path.c_str(), &width, &height,
                                        &nrComponents,
                                        0);
         if (texBuffer)
@@ -661,9 +661,9 @@ namespace ZeroEngine
 
             if (mMissingTexID == 0)
             {
-                std::u8string missingPath =
+                std::string missingPath =
                 (GlobalDataManager::GetInstance().GetGlobalDataRef()->BuiltinAssetsDir / "Textures" /
-                 "missingTexture.jpg").u8string();
+                 "missingTexture.jpg").string();
 
                 ZERO_CORE_ASSERT(missingPath != path, "missingPath should not eq path, otherwise it's not ending loop");
                 mMissingTexID = LoadTexture(missingPath, width, height, needFlip);
@@ -715,7 +715,7 @@ namespace ZeroEngine
         return textureID;
     }
 
-    uint32_t RHI_OpenGLImpl::LoadCubeMap(const std::vector<std::u8string>& facePaths)
+    uint32_t RHI_OpenGLImpl::LoadCubeMap(const std::vector<std::string>& facePaths)
     {
         ZERO_CORE_ASSERT(facePaths.size() == 6, "Cubemap should have 6 pieces!");
 
@@ -726,14 +726,7 @@ namespace ZeroEngine
         int width, height, nrComponents;
         for (uint32_t i = 0; i < facePaths.size(); ++i)
         {
-            char const* utf8Path;
-#ifdef ZERO_OS_WINDOWS
-            utf8Path = reinterpret_cast<char const *>(facePaths[i].c_str());
-#else
-            ZERO_CORE_ASSERT(false, "TODO");
-#endif
-
-            uint8_t* data = stbi_load(utf8Path, &width, &height, &nrComponents, 0);
+            uint8_t* data = stbi_load(facePaths[i].c_str(), &width, &height, &nrComponents, 0);
             if (data)
             {
                 GLenum format = GL_RGB;
@@ -760,7 +753,7 @@ namespace ZeroEngine
             }
             else
             {
-                LOG_ERROR(std::format("[{}] Can't load cubemap texture, path: {}", __FUNCTION__, utf8Path));
+                LOG_ERROR(std::format("[{}] Can't load cubemap texture, path: {}", __FUNCTION__, facePaths[i]));
                 stbi_image_free(data);
             }
         }
@@ -828,7 +821,7 @@ namespace ZeroEngine
         return idx;
     }
 
-    void RHI_OpenGLImpl::SetupMaterial(const std::shared_ptr<Material>& material)
+    void RHI_OpenGLImpl::SetupMaterial(Material* material)
     {
         for (const auto& [name, data]: material->mData->mDatas)
         {
@@ -1174,168 +1167,168 @@ namespace ZeroEngine
         glUseProgram(id);
     }
 
-    void RHI_OpenGLImpl::SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetScalarProp(Material* material, const std::string& propName,
                                        bool value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Bool, value};
     }
 
-    void RHI_OpenGLImpl::SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetScalarProp(Material* material, const std::string& propName,
                                        float value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Float, value};
     }
 
-    void RHI_OpenGLImpl::SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetScalarProp(Material* material, const std::string& propName,
                                        int32_t value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Int, value};
     }
 
-    void RHI_OpenGLImpl::SetScalarProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetScalarProp(Material* material, const std::string& propName,
                                        uint32_t value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::UInt, value};
     }
 
-    void RHI_OpenGLImpl::SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetVectorProp(Material* material, const std::string& propName,
                                        const glm::vec2& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Vec2, value};
     }
 
-    void RHI_OpenGLImpl::SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetVectorProp(Material* material, const std::string& propName,
                                        const glm::vec3& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Vec3, value};
     }
 
-    void RHI_OpenGLImpl::SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetVectorProp(Material* material, const std::string& propName,
                                        const glm::vec4& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Vec4, value};
     }
 
-    void RHI_OpenGLImpl::SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetVectorProp(Material* material, const std::string& propName,
                                        const glm::ivec2& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::IVec2, value};
     }
 
-    void RHI_OpenGLImpl::SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetVectorProp(Material* material, const std::string& propName,
                                        const glm::ivec3& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::IVec3, value};
     }
 
-    void RHI_OpenGLImpl::SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetVectorProp(Material* material, const std::string& propName,
                                        const glm::ivec4& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::IVec4, value};
     }
 
-    void RHI_OpenGLImpl::SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetVectorProp(Material* material, const std::string& propName,
                                        const glm::uvec2& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::UVec2, value};
     }
 
-    void RHI_OpenGLImpl::SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetVectorProp(Material* material, const std::string& propName,
                                        const glm::uvec3& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::UVec3, value};
     }
 
-    void RHI_OpenGLImpl::SetVectorProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetVectorProp(Material* material, const std::string& propName,
                                        const glm::uvec4& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::UVec4, value};
     }
 
-    void RHI_OpenGLImpl::SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetMatrixProp(Material* material, const std::string& propName,
                                        const glm::mat2& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Mat2x2, value};
     }
 
-    void RHI_OpenGLImpl::SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetMatrixProp(Material* material, const std::string& propName,
                                        const glm::mat2x3& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Mat2x3, value};
     }
 
-    void RHI_OpenGLImpl::SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetMatrixProp(Material* material, const std::string& propName,
                                        const glm::mat2x4& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Mat2x4, value};
     }
 
-    void RHI_OpenGLImpl::SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetMatrixProp(Material* material, const std::string& propName,
                                        const glm::mat3& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Mat3x3, value};
     }
 
-    void RHI_OpenGLImpl::SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetMatrixProp(Material* material, const std::string& propName,
                                        const glm::mat3x2& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Mat3x2, value};
     }
 
-    void RHI_OpenGLImpl::SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetMatrixProp(Material* material, const std::string& propName,
                                        const glm::mat3x4& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Mat3x4, value};
     }
 
-    void RHI_OpenGLImpl::SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetMatrixProp(Material* material, const std::string& propName,
                                        const glm::mat4& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Mat4x4, value};
     }
 
-    void RHI_OpenGLImpl::SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetMatrixProp(Material* material, const std::string& propName,
                                        const glm::mat4x2& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Mat4x2, value};
     }
 
-    void RHI_OpenGLImpl::SetMatrixProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetMatrixProp(Material* material, const std::string& propName,
                                        const glm::mat4x3& value)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->properties[propName] = {ShaderPropertyType::Mat4x3, value};
     }
 
-    void RHI_OpenGLImpl::SetTextureProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetTextureProp(Material* material, const std::string& propName,
                                         uint32_t texID, uint32_t texIdx, bool isBuffer)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());
         materialData->textures[propName] = {texID, texIdx};
     }
 
-    void RHI_OpenGLImpl::SetCubemapProp(const std::shared_ptr<Material>& material, const std::string& propName,
+    void RHI_OpenGLImpl::SetCubemapProp(Material* material, const std::string& propName,
                                         uint32_t texID, uint32_t texIdx, bool isBuffer)
     {
         auto materialData = GetMaterialDataByIdx(material->mData->GetID());

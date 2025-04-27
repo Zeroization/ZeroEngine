@@ -195,7 +195,8 @@ namespace ZeroEngine
     {
         Opaque,      // 不透明物体
         Transparent, // (半)透明物体
-        UI           // 游戏内UI
+        UI,          // 游戏内UI
+        Deferred
     };
 
     enum class RenderCommandType : uint8_t
@@ -228,6 +229,12 @@ namespace ZeroEngine
         Directional, ///< 平行光阴影
         Point,       ///< 点光源阴影
         Spot         ///< 聚光灯阴影 TODO
+    };
+
+    enum class TextureType : uint8_t
+    {
+        Single2D,
+        CubeMap
     };
 
     enum class MaterialType : uint8_t
@@ -299,7 +306,7 @@ namespace ZeroEngine
         int numChannels = 0;
         uint32_t _PADDING_;
 
-        std::wstring path;
+        std::string path;
         uint8_t* data = nullptr;
     };
 
@@ -310,7 +317,7 @@ namespace ZeroEngine
         int numChannels = 0;
         uint32_t _PADDING_;
 
-        std::wstring path;
+        std::string path;
         uint8_t* data[6] = {nullptr};
     };
 

@@ -4,7 +4,7 @@
 
 namespace ZeroEngine
 {
-    Texture::Texture(const std::u8string& path)
+    Texture::Texture(const std::string& path)
         : mPath(path), mType(TextureType::Single2D)
     {
         mID = RHI::GetInstance().LoadTexture(path, mWidth, mHeight, false);
@@ -16,7 +16,7 @@ namespace ZeroEngine
         mID = RHI::GetInstance().CreateTexture(data);
     }
 
-    Texture::Texture(const std::vector<std::u8string>& faces)
+    Texture::Texture(const std::vector<std::string>& faces)
         : mType(TextureType::CubeMap)
     {
         mID = RHI::GetInstance().LoadCubeMap(faces);
