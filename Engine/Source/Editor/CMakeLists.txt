@@ -8,5 +8,8 @@ add_executable(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
 set(ZEROENGINE_EDITOR_HEADS "${HEADER_FILES}" PARENT_SCOPE)
 
-target_include_directories(${TARGET_NAME} PUBLIC ../Runtime)
+target_include_directories(${TARGET_NAME}
+        PUBLIC ../Runtime
+        PUBLIC ./
+)
 target_link_libraries(${TARGET_NAME} PUBLIC ZeroEngineRuntime)
