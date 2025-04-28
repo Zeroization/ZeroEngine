@@ -98,5 +98,6 @@ using NoDeduce_t = typename NoDeduce<T>::type;
 // 自己的库===========================
 #include "Function/Input/InputDefines.h"
 #include "Function/Render/RenderDefines.h"
+#include "Component/ComponentDefines.h"
 #include "Core/Assert/Assert.h"
 #include "Core/Hash/Hash.h"

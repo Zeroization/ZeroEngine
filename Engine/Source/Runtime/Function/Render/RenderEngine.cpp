@@ -1,21 +1,28 @@
 #include "RenderEngine.h"
 
+#include "Feature/RenderPass/RenderPassBase.h"
+#include "Feature/RenderPass/RenderPassManager.h"
 #include "FrameBuffer/FBOManager.h"
 #include "Function/Render/Window/WindowManager.h"
 #include "Function/Render/RHI/RHI.h"
+#include "Shader/SlangShaderParser.h"
 
 namespace ZeroEngine
 {
     void RenderEngine::Create()
     {
         WindowManager::Create();
+        SlangShaderParser::Create();
         RHI::Create();
         FBOManager::Create();
+        RenderPassManager::Create();
     }
 
     void RenderEngine::Destroy()
     {
+        RenderPassManager::Destroy();
         FBOManager::Destroy();
+        SlangShaderParser::Destroy();
     }
 
     RenderEngine& RenderEngine::GetInstance()
@@ -31,6 +38,13 @@ namespace ZeroEngine
 
     void RenderEngine::Render()
     {
+        // TODO: SceneManager, Camera
+
+        auto& renderPassMgr = RenderPassManager::GetInstance();
+        for (const auto& pass: renderPassMgr.mCurPasses)
+        {
+            // pass->Render(camera);
+        }
     }
 
     void RenderEngine::EndRender()

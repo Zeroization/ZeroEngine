@@ -5,6 +5,8 @@
 
 // 默认屏幕FBO, id: UINT32_MAX
 #define ZERO_BUILTIN_FBO_SCREEN "Builtin_Screen"
+// 最终输出到屏幕的FBO
+#define ZERO_BUILTIN_FBO_OUTPUT "Builtin_GameView"
 
 namespace ZeroEngine
 {

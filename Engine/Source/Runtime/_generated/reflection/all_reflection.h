@@ -4,6 +4,7 @@
 
 // Auto-generated include files:
 #include "EngineConfig.reflgen.h"
+#include "ProjectConfig.reflgen.h"
 #include "Animal.reflgen.h"
 #include "Student.reflgen.h"
 
@@ -13,6 +14,7 @@ namespace ZeroEngine::Reflection::TypeMetaRegister
     {
         // Auto-generated register functions
         TypeWrapperRegister::Register_EngineConfig();
+        TypeWrapperRegister::Register_ProjectConfig();
         TypeWrapperRegister::Register_Animal();
         TypeWrapperRegister::Register_Student();
     }

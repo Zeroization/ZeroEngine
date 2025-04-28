@@ -16,10 +16,16 @@ namespace ZeroEngine
         virtual ~EngineConfig() = default;
 
     public:
+        /// Engine Setting ==============================
         ZERO_PROPERTY()
         uint32_t mWindowWidth;
-
         ZERO_PROPERTY()
         uint32_t mWindowHeight;
+
+        /// Editor Setting ==============================
+        ZERO_PROPERTY()
+        uint32_t mGameViewWidth;
+        ZERO_PROPERTY()
+        uint32_t mGameViewHeight;
     };
 }

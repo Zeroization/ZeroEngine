@@ -1,17 +1,15 @@
 #include "Game.h"
-
 #include "Core/Reflection/ReflectionManager.h"
-#include "Function/Input/InputManager.h"
-#include "Function/Render/RenderEngine.h"
-#include "Function/Render/Window/WindowManager.h"
-#include "GUI/EditorGUIManager.h"
-
-// TODO: 测试完记得删掉
-#include <_generated/reflection/Student.reflgen.h>
-
 #include "Core/GlobalDataManager.h"
 #include "Core/Event/EventManager.h"
 #include "Core/FileSystem/FileSystem.h"
+#include "Core/Serialize/SerializeManager.h"
+#include "Function/Input/InputManager.h"
+#include "Function/Render/RenderEngine.h"
+#include "Function/Render/Window/WindowManager.h"
+#include "Function/Render/RHI/RHI.h"
+#include "Function/Render/Shader/Shader.h"
+#include "GUI/EditorGUIManager.h"
 
 namespace ZeroEngine
 {
@@ -39,7 +37,7 @@ namespace ZeroEngine
 
         LOG_INFO(std::format("[{}] Engine Init =====================================", __FUNCTION__));
 
-        // TODO: 做完Init相关测试后删掉
+        // TODO: 删掉
         {
         }
 

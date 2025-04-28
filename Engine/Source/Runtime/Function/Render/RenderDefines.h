@@ -191,6 +191,12 @@ namespace ZeroEngine
         RayTracing, // TODO
     };
 
+    NLOHMANN_JSON_SERIALIZE_ENUM(RenderPipelineType, {
+                                 {RenderPipelineType::Forward, "RenderPipeline_Forward"},
+                                 {RenderPipelineType::Deferred, "RenderPipeline_Deferred"},
+                                 {RenderPipelineType::RayTracing, "RenderPipeline_RayTracing"}
+                                 })
+
     enum class RenderQueueType : uint8_t
     {
         Opaque,      // 不透明物体
