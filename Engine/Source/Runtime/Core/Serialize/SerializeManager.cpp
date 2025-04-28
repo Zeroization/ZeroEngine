@@ -2,20 +2,18 @@
 
 namespace ZeroEngine
 {
-    std::shared_ptr<SerializeManager> SerializeManager::sInstance = nullptr;
-
     void SerializeManager::Create()
     {
-        sInstance = std::make_shared<SerializeManager>();
+        GetInstance();
     }
 
     void SerializeManager::Destroy()
     {
-        sInstance.reset();
     }
 
-    std::shared_ptr<SerializeManager> SerializeManager::GetInstance()
+    SerializeManager& SerializeManager::GetInstance()
     {
+        static SerializeManager sInstance;
         return sInstance;
     }
 } // ZeroEngine

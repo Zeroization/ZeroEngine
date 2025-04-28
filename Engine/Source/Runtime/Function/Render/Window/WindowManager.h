@@ -10,9 +10,14 @@ namespace ZeroEngine
     class WindowManager
     {
     public:
+        WindowManager() = default;
         virtual ~WindowManager() = default;
+        WindowManager(const WindowManager&) = delete;
+        WindowManager(WindowManager&&) = delete;
+        WindowManager& operator=(const WindowManager&) = delete;
+        WindowManager& operator=(WindowManager&&) = delete;
 
-        static std::shared_ptr<WindowManager> GetInstance();
+        static WindowManager& GetInstance();
         static void Create();
 
         virtual void CloseWindow() = 0;
@@ -24,12 +29,9 @@ namespace ZeroEngine
         virtual bool CheckMouseDown(MouseButton mb) = 0;
 
         /// Getters
-        virtual void *GetCurrentContext();
-        virtual void *GetWindowPtr() = 0;
+        virtual void* GetCurrentContext();
+        virtual void* GetWindowPtr() = 0;
         virtual float GetCurFrameTime() = 0;
         virtual std::pair<float, float> GetMousePos() = 0;
-
-    private:
-        static std::shared_ptr<WindowManager> Instance;
     };
 }

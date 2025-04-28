@@ -38,7 +38,7 @@
 
 // 仅供代码生成时使用的內部宏
 #define ZERO_REFL_NAME_HASH(NameStr) \
-    ::ZeroEngine::Reflection::ReflectionManager::GetInstance()->GetTypeNameHash(#NameStr)
+    ::ZeroEngine::Reflection::ReflectionManager::GetInstance().GetTypeNameHash(#NameStr)
 #define ZERO_REFL_REGISTER_CLASS(ClassTypeName) \
     entt::meta_factory<ClassTypeName>{} \
         .type(ZERO_REFL_NAME_HASH(ClassTypeName)) \
@@ -88,10 +88,14 @@ namespace ZeroEngine::Reflection
     public:
         static void Create();
         static void Destroy();
-        static std::shared_ptr<ReflectionManager> GetInstance();
+        static ReflectionManager& GetInstance();
 
         ReflectionManager() = default;
         virtual ~ReflectionManager() = default;
+        ReflectionManager(const ReflectionManager&) = delete;
+        ReflectionManager(ReflectionManager&&) = delete;
+        ReflectionManager& operator=(const ReflectionManager&) = delete;
+        ReflectionManager& operator=(ReflectionManager&&) = delete;
 
         /// 向反射系统中注册类型名和它的哈希值
         /// @param typeName 类型名
@@ -99,7 +103,6 @@ namespace ZeroEngine::Reflection
         uint32_t GetTypeNameHash(std::string_view typeName);
 
     private:
-        static std::shared_ptr<ReflectionManager> sInstance;
         std::unordered_map<std::string_view, Identifier> mTyNameToIdentifier;
 
         // 模板部分==============================================================

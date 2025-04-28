@@ -9,6 +9,8 @@
 #include "Widgets/EditorGUIWidgets.hpp"
 #include "Core/FileSystem/FileSystem.h"
 #include "imgui_internal.h"
+#include "Core/GlobalDataManager.h"
+#include "GUITexture/EditorGUITexManager.h"
 
 #define CHECK_GUI_SHORTCUT(name, shortcut, doAction) \
 ZERO_EXPLICIT_STATIC ImGuiKeyChord chordFor##name = shortcut; \
@@ -20,30 +22,33 @@ if (!isActiveFor##name && ImGui::IsKeyChordPressed(chordFor##name)) \
 
 namespace ZeroEngine
 {
-	std::shared_ptr<EditorGUIManager> EditorGUIManager::Instance = nullptr;
-
 	void EditorGUIManager::Create()
 	{
-#ifdef ZERO_GRAPHIC_OPENGL
-		Instance = std::make_shared<EditorGUIManager_OpenGLImpl>();
-#endif
-
+		GetInstance();
+		EditorGUITexManager::Create();
 		EditorGUIPanelManager::Create();
 	}
 
 	void EditorGUIManager::Destroy()
 	{
-		Instance.reset();
+		EditorGUIPanelManager::Destroy();
+		EditorGUITexManager::Destroy();
 	}
 
-	std::shared_ptr<EditorGUIManager> EditorGUIManager::GetInstance()
+	EditorGUIManager& EditorGUIManager::GetInstance()
 	{
-		return Instance;
+#ifdef ZERO_GRAPHIC_OPENGL
+		static EditorGUIManager_OpenGLImpl sInstance;
+#elif
+		ZERO_CORE_ASSERT(false, "Other API TODO...");
+#endif
+		return sInstance;
 	}
 
 	EditorGUIManager::EditorGUIManager()
 	{
-		ZERO_CORE_ASSERT(WindowManager::GetInstance(), "WindowPtr is nullptr, can't init ImGUI!")
+		ZERO_CORE_ASSERT(WindowManager::GetInstance().GetWindowPtr() != nullptr,
+		                 "WindowPtr is nullptr, can't init ImGUI!")
 
 		// 初始化ImGUI ====================================
 		IMGUI_CHECKVERSION();
@@ -57,7 +62,7 @@ namespace ZeroEngine
 		io.ConfigWindowsMoveFromTitleBarOnly = true;
 		io.ConfigWindowsResizeFromEdges = true;
 		// 设置字体
-		const std::string assetDir = (FileSystem::GetWorkingDir() / "BuiltinAssets").string();
+		const std::string assetDir = GlobalDataManager::GetInstance().GetGlobalDataRef()->BuiltinAssetsDir.string();
 		io.Fonts->AddFontFromFileTTF((assetDir + "/Fonts/OPPOSansM.ttf").c_str(), 18.0f, nullptr,
 		                             io.Fonts->GetGlyphRangesChineseFull());
 		// 设置主题
@@ -164,6 +169,7 @@ namespace ZeroEngine
 	{
 		// TODO: 渲染各种控件和面板
 		MainDockingWidget();
+		EditorGUIPanelManager::GetInstance().EditorPanelRender();
 
 		ImGui::Render();
 	}

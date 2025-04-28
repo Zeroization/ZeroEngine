@@ -1,50 +1,64 @@
 #include "RenderEngine.h"
+
+#include "Feature/RenderPass/RenderPassBase.h"
+#include "Feature/RenderPass/RenderPassManager.h"
+#include "FrameBuffer/FBOManager.h"
 #include "Function/Render/Window/WindowManager.h"
 #include "Function/Render/RHI/RHI.h"
+#include "Shader/SlangShaderParser.h"
 
 namespace ZeroEngine
 {
-    std::shared_ptr<RenderEngine> RenderEngine::Instance = nullptr;
-
     void RenderEngine::Create()
     {
-        Instance = std::make_shared<RenderEngine>();
-
         WindowManager::Create();
+        SlangShaderParser::Create();
         RHI::Create();
+        FBOManager::Create();
+        RenderPassManager::Create();
     }
 
     void RenderEngine::Destroy()
     {
-        Instance.reset();
+        RenderPassManager::Destroy();
+        FBOManager::Destroy();
+        SlangShaderParser::Destroy();
     }
 
-    std::shared_ptr<RenderEngine> RenderEngine::GetInstance()
+    RenderEngine& RenderEngine::GetInstance()
     {
-        return Instance;
+        static RenderEngine sInstance;
+        return sInstance;
     }
 
     void RenderEngine::BeginRender()
     {
-        RHI::GetInstance()->BeginFrame();
+        RHI::GetInstance().BeginFrame();
     }
 
     void RenderEngine::Render()
     {
+        // TODO: SceneManager, Camera
+
+        auto& renderPassMgr = RenderPassManager::GetInstance();
+        for (const auto& pass: renderPassMgr.mCurPasses)
+        {
+            // pass->Render(camera);
+        }
     }
 
     void RenderEngine::EndRender()
     {
-        RHI::GetInstance()->EndFrame();
+        RHI::GetInstance().EndFrame();
     }
 
     void RenderEngine::CloseWindow()
     {
-        WindowManager::GetInstance()->CloseWindow();
+        WindowManager::GetInstance().CloseWindow();
     }
 
     bool RenderEngine::WindowShouldClose()
     {
-        return WindowManager::GetInstance()->WindowShouldClose();
+        return WindowManager::GetInstance().WindowShouldClose();
     }
 } // ZeroEngine

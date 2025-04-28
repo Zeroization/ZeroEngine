@@ -11,16 +11,19 @@ namespace ZeroEngine
     public:
         static void Create();
         static void Destroy();
-        static std::shared_ptr<EventManager> GetInstance();
+        static EventManager& GetInstance();
 
         EventManager() = default;
         virtual ~EventManager() = default;
+        EventManager(const EventManager&) = delete;
+        EventManager(EventManager&&) = delete;
+        EventManager& operator=(const EventManager&) = delete;
+        EventManager& operator=(EventManager&&) = delete;
 
         uint32_t GetEventTypeHash(EventType eventTy);
         uint32_t GetEventPriorityHash(EventPriority priority);
 
     private:
-        static std::shared_ptr<EventManager> sInstance;
         entt::dispatcher mEventDispatcher;
         std::unordered_map<std::string, Identifier> mStrToID;
 
@@ -62,6 +65,39 @@ namespace ZeroEngine
             auto connectImmediate = mEventDispatcher
                                     .sink<Event>(GetEventTypeHash(metadata.Type))
                                     .connect<CallbackFn, ListenerTy>(listener);
+
+            return connectDeferred && connectImmediate;
+        }
+
+        /// @copydoc BindListener
+        template <typename ListenerTy, auto CallbackFn>
+        bool BindListener(NoDeduce_t<ListenerTy>* listener, EventMetaData& metadata)
+        {
+            // 事件队列: 按优先级分为三个队列
+            entt::connection connectDeferred;
+            if (metadata.Priority == EventPriority::High)
+            {
+                connectDeferred = mEventDispatcher
+                                  .sink<Event>(GetEventPriorityHash(EventPriority::High))
+                                  .connect<CallbackFn, ListenerTy>(*listener);
+            }
+            else if (metadata.Priority == EventPriority::Medium)
+            {
+                connectDeferred = mEventDispatcher
+                                  .sink<Event>(GetEventPriorityHash(EventPriority::Medium))
+                                  .connect<CallbackFn, ListenerTy>(*listener);
+            }
+            else
+            {
+                connectDeferred = mEventDispatcher
+                                  .sink<Event>(GetEventPriorityHash(EventPriority::Low))
+                                  .connect<CallbackFn, ListenerTy>(*listener);
+            }
+
+            // 立即事件: 按事件类型分类
+            auto connectImmediate = mEventDispatcher
+                                    .sink<Event>(GetEventTypeHash(metadata.Type))
+                                    .connect<CallbackFn, ListenerTy>(*listener);
 
             return connectDeferred && connectImmediate;
         }

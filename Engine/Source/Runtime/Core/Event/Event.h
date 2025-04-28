@@ -7,22 +7,27 @@ namespace ZeroEngine
     /// 事件类型
     enum class EventType : uint8_t
     {
+        /// 范围: 0 ~ 255
         None = 0,
         /// Builtin_InputEvent
         Builtin_KeyboardInput,
+        /// Builtin_WindowEvent
+        Builtin_WindowResize,
     };
 
     NLOHMANN_JSON_SERIALIZE_ENUM(EventType, {
                                  {EventType::None, "None"},
-                                 {EventType::Builtin_KeyboardInput, "Builtin_KeyboardInput"}
+                                 {EventType::Builtin_KeyboardInput, "Builtin_KeyboardInput"},
+                                 {EventType::Builtin_WindowResize, "Builtin_WindowResize"},
                                  })
 
     /// 事件大类
     enum class EventCategory : uint8_t
     {
-        Builtin_OtherEvent = 0b00000001,
-        Builtin_InputEvent = 0b00000010,
-        UserDefinedEvent   = 0b10000000
+        Builtin_OtherEvent  = 0b00000001,
+        Builtin_InputEvent  = 0b00000010,
+        Builtin_WindowEvent = 0b00000100,
+        UserDefinedEvent    = 0b10000000
     };
 
     inline uint8_t operator|(EventCategory lhs, EventCategory rhs)
@@ -38,6 +43,7 @@ namespace ZeroEngine
     NLOHMANN_JSON_SERIALIZE_ENUM(EventCategory, {
                                  {EventCategory::Builtin_OtherEvent, "Builtin_OtherEvent"},
                                  {EventCategory::Builtin_InputEvent, "BuiltIn_InputEvent"},
+                                 {EventCategory::Builtin_WindowEvent, "BuiltIn_WindowEvent"},
                                  {EventCategory::UserDefinedEvent, "UserDefinedEvent"}
                                  })
 
@@ -67,7 +73,7 @@ namespace ZeroEngine
     public:
         Event(EventType eventType, uint8_t eventCategory, EventPriority eventPriority = EventPriority::Medium)
             : mMetadata(eventType, eventCategory, eventPriority),
-              mCurFrameTime(WindowManager::GetInstance()->GetCurFrameTime())
+              mCurFrameTime(WindowManager::GetInstance().GetCurFrameTime())
         {
             nlohmann::json tmpJson = eventType;
             mEventTypeStr = tmpJson.dump();

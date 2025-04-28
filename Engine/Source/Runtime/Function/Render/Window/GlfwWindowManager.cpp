@@ -2,6 +2,7 @@
 
 #include "Function/Input/InputManager.h"
 #include "Core/GlobalDataManager.h"
+#include "Core/Event/EventManager.h"
 
 
 namespace ZeroEngine
@@ -22,11 +23,13 @@ namespace ZeroEngine
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#   if defined(ZERO_DEBUG_ENABLE)
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#   endif
 #endif
 
-        // TODO: EngineConfig写好后覆盖设置
-        auto globalDataMgr = GlobalDataManager::GetInstance();
-        auto engineCfg = globalDataMgr->GetGlobalDataRef()->engineCfg;
+        auto& globalDataMgr = GlobalDataManager::GetInstance();
+        auto engineCfg = globalDataMgr.GetGlobalDataRef()->engineCfg;
         WindowPtr = glfwCreateWindow(engineCfg.mWindowWidth,
                                      engineCfg.mWindowHeight,
                                      windowName.c_str(), nullptr, nullptr);
@@ -54,6 +57,19 @@ namespace ZeroEngine
             LOG_ERROR(std::format("[GLFW] Error code: {}, description: {}", error, desc));
         });
 
+        // 绑定GLFW窗口大小改变回调
+        glfwSetWindowSizeCallback(WindowPtr, [](GLFWwindow* window, int width, int height)
+        {
+            // LOG_DEBUG(std::format("[{}] new width: {}; new height: {}", __FUNCTION__, width, height));
+            Event windowResizeEvent(EventType::Builtin_WindowResize,
+                                    static_cast<uint8_t>(EventCategory::Builtin_WindowEvent));
+            windowResizeEvent.mArgs["width"] = width;
+            windowResizeEvent.mArgs["height"] = height;
+
+            auto& eventMgr = EventManager::GetInstance();
+            eventMgr.TriggerEvent(std::move(windowResizeEvent));
+        });
+
         // 绑定键盘按键回调
         glfwSetKeyCallback(WindowPtr, [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
@@ -61,17 +77,17 @@ namespace ZeroEngine
             {
                 case GLFW_PRESS:
                 {
-                    InputManager::GetInstance()->UpdateKeyState(static_cast<KeyCode>(key), KeyState::Pressed);
+                    InputManager::GetInstance().UpdateKeyState(static_cast<KeyCode>(key), KeyState::Pressed);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    InputManager::GetInstance()->UpdateKeyState(static_cast<KeyCode>(key), KeyState::Released);
+                    InputManager::GetInstance().UpdateKeyState(static_cast<KeyCode>(key), KeyState::Released);
                     break;
                 }
                 case GLFW_REPEAT:
                 {
-                    InputManager::GetInstance()->UpdateKeyState(static_cast<KeyCode>(key), KeyState::Held);
+                    InputManager::GetInstance().UpdateKeyState(static_cast<KeyCode>(key), KeyState::Held);
                     break;
                 }
                 default:
@@ -98,14 +114,14 @@ namespace ZeroEngine
             {
                 case GLFW_PRESS:
                 {
-                    InputManager::GetInstance()->UpdateMouseButtonState(static_cast<MouseButton>(button),
-                                                                        KeyState::Pressed);
+                    InputManager::GetInstance().UpdateMouseButtonState(static_cast<MouseButton>(button),
+                                                                       KeyState::Pressed);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    InputManager::GetInstance()->UpdateMouseButtonState(static_cast<MouseButton>(button),
-                                                                        KeyState::Released);
+                    InputManager::GetInstance().UpdateMouseButtonState(static_cast<MouseButton>(button),
+                                                                       KeyState::Released);
                     break;
                 }
                 default:

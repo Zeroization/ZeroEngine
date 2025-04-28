@@ -9,7 +9,7 @@ namespace ZeroEngine
 	EditorGUIManager_OpenGLImpl::EditorGUIManager_OpenGLImpl()
 	{
 		// 初始化渲染后端
-		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(WindowManager::GetInstance()->GetWindowPtr()), true);
+		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(WindowManager::GetInstance().GetWindowPtr()), true);
 		ImGui_ImplOpenGL3_Init("#version 460"); // TODO: 读配置
 	}
 
@@ -31,7 +31,7 @@ namespace ZeroEngine
 	{
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		GLFWwindow *backup_current_context = glfwGetCurrentContext();
+		GLFWwindow* backup_current_context = glfwGetCurrentContext();
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 		glfwMakeContextCurrent(backup_current_context);

@@ -8,24 +8,27 @@ namespace ZeroEngine
     public:
         static void Create();
         static void Destroy();
-        static std::shared_ptr<EditorGUIManager> GetInstance();
+        static EditorGUIManager& GetInstance();
 
         EditorGUIManager();
         virtual ~EditorGUIManager() = default;
+        EditorGUIManager(const EditorGUIManager&) = delete;
+        EditorGUIManager(EditorGUIManager&&) = delete;
+        EditorGUIManager& operator=(const EditorGUIManager&) = delete;
+        EditorGUIManager& operator=(EditorGUIManager&&) = delete;
 
         /// 逻辑相关===================================
         void Update();
         void CheckGUIShortcuts();
 
-
         void Render();
         void GUIRender();
+
+    public:
+        glm::vec2 mViewBorderSize;
 
     protected:
         virtual void BeforeGUIRender() = 0;
         virtual void AfterGUIRender() = 0;
-
-    private:
-        static std::shared_ptr<EditorGUIManager> Instance;
     };
 } // ZeroEngine

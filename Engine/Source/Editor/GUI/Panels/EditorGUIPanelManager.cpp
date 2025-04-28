@@ -1,28 +1,40 @@
 ﻿#include "EditorGUIPanelManager.h"
 
+#include "EditorGUIContentBrowserPanel.h"
+#include "EditorGUIOutlinerPanel.h"
+#include "EditorGUIScenePanel.h"
+#include "EditorGUIViewportPanel.h"
+
 namespace ZeroEngine
 {
-    std::shared_ptr<EditorGUIPanelManager> EditorGUIPanelManager::Instance = nullptr;
 
     void EditorGUIPanelManager::Create()
     {
-        Instance = std::make_shared<EditorGUIPanelManager>();
+        GetInstance().mPanels.emplace_back(std::make_unique<EditorGUIViewportPanel>());
+        GetInstance().mPanels.emplace_back(std::make_unique<EditorGUIScenePanel>());
+        GetInstance().mPanels.emplace_back(std::make_unique<EditorGUIContentBrowserPanel>());
+        GetInstance().mPanels.emplace_back(std::make_unique<EditorGUIOutlinerPanel>());
     }
 
-    std::shared_ptr<EditorGUIPanelManager> EditorGUIPanelManager::GetInstance()
+    void EditorGUIPanelManager::Destroy()
     {
-        return Instance;
+        for (auto& panel: GetInstance().mPanels)
+        {
+            panel.reset();
+        }
     }
 
-    EditorGUIPanelManager::~EditorGUIPanelManager()
+    EditorGUIPanelManager& EditorGUIPanelManager::GetInstance()
     {
+        static EditorGUIPanelManager sInstance;
+        return sInstance;
     }
 
     void EditorGUIPanelManager::EditorPanelRender()
     {
-        for (const auto& Data : Panels)
+        for (auto& panel: mPanels)
         {
-            Data.Panel->ImGuiRender();
+            panel->ImGuiRender();
         }
     }
 } // ZeroEngine

@@ -4,27 +4,23 @@
 
 namespace ZeroEngine
 {
-    struct PanelData
-    {
-        const char *UUID = "";
-        const char *Name = "";
-        std::shared_ptr<EditorGUIBasePanel> Panel = nullptr;
-        bool bIsOpen = false;
-    };
-
     class EditorGUIPanelManager
     {
     public:
         static void Create();
-        static std::shared_ptr<EditorGUIPanelManager> GetInstance();
+        static void Destroy();
+        static EditorGUIPanelManager& GetInstance();
 
         EditorGUIPanelManager() = default;
-        ~EditorGUIPanelManager();
+        ~EditorGUIPanelManager() = default;
+        EditorGUIPanelManager(const EditorGUIPanelManager&) = delete;
+        EditorGUIPanelManager(EditorGUIPanelManager&&) = delete;
+        EditorGUIPanelManager& operator=(const EditorGUIPanelManager&) = delete;
+        EditorGUIPanelManager& operator=(EditorGUIPanelManager&&) = delete;
 
         void EditorPanelRender();
 
     private:
-        static std::shared_ptr<EditorGUIPanelManager> Instance;
-        std::vector<PanelData> Panels;
+        std::vector<std::unique_ptr<EditorGUIBasePanel>> mPanels;
     };
 } // ZeroEngine
